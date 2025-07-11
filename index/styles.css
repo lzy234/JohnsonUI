@@ -1,0 +1,279 @@
+/* 重置样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f1f1f1;
+    overflow: hidden;
+    height: 100vh;
+}
+
+/* 移动端容器 */
+.mobile-container {
+    width: 390px;
+    height: 844px;
+    margin: 0 auto;
+    position: relative;
+    background: linear-gradient(180deg, #E8E8E8 37.03%, #F1F1F1 88.22%);
+    border-radius: 32px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* 主要内容区域 */
+.main-content {
+    position: relative;
+    height: calc(100% - 54px);
+    overflow: hidden;
+}
+
+/* 背景装饰 */
+.background-decoration {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 420px;
+    height: 830px;
+    overflow: visible;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.background-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center right;
+    opacity: 1;
+}
+
+.gradient-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.55) 55.71%, rgba(0, 0, 0, 0) 74.82%);
+    pointer-events: none;
+    z-index: 5;
+}
+
+/* 卡片容器 */
+.cards-container {
+    top: 240px;
+    padding: 62px 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    position: relative;
+    z-index: 20;
+}
+
+/* AI助手卡片 */
+.ai-card {
+    position: relative;
+    background: rgba(240, 240, 240, 0.6);
+    backdrop-filter: blur(4px);
+    border-radius: 20px;
+    border: 1px solid transparent;
+    background-clip: padding-box;
+    padding: 12px 10px 12px 10px;
+    height: 140px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 
+        -2px 4px 10px 0px rgba(145, 145, 145, 0.05),
+        -7px 17px 18px 0px rgba(145, 145, 145, 0.04),
+        -15px 37px 24px 0px rgba(145, 145, 145, 0.03),
+        -27px 66px 29px 0px rgba(145, 145, 145, 0.01),
+        -42px 103px 31px 0px rgba(145, 145, 145, 0);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.ai-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 20px;
+    padding: 0px;
+    background: conic-gradient(
+        from 36deg at 52% 36%, 
+        rgba(64, 64, 64, 0.4) 2.9%, 
+        rgba(64, 64, 64, 0.25) 8.9%, 
+        rgba(255, 255, 255, 0.5) 16.7%, 
+        rgba(255, 255, 255, 0.5) 30.1%, 
+        rgba(64, 64, 64, 0.25) 47.5%, 
+        rgba(249, 249, 249, 1) 56.4%, 
+        rgba(255, 255, 255, 0.5) 79.8%, 
+        rgba(249, 249, 249, 0.5) 90.8%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    z-index: -1;
+}
+
+.ai-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+        -4px 8px 20px 0px rgba(145, 145, 145, 0.08),
+        -14px 34px 36px 0px rgba(145, 145, 145, 0.06),
+        -30px 74px 48px 0px rgba(145, 145, 145, 0.04),
+        -54px 132px 58px 0px rgba(145, 145, 145, 0.02),
+        -84px 206px 62px 0px rgba(145, 145, 145, 0);
+}
+
+/* 卡片装饰 */
+.card-decoration {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.decoration-circles {
+    position: absolute;
+    top: -11px;
+    left: -34.5px;
+    width: 190px;
+    height: 190px;
+}
+
+.decoration-circles::before {
+    content: '';
+    position: absolute;
+    width: 71px;
+    height: 190px;
+    border: 1px solid transparent;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);
+    border-radius: 50%;
+    left: 59px;
+    top: 0;
+}
+
+.decoration-circles::after {
+    content: '';
+    position: absolute;
+    width: 190px;
+    height: 71px;
+    border: 1px solid transparent;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);
+    border-radius: 50%;
+    left: 0;
+    top: 59px;
+}
+
+/* 医生头像 */
+.doctor-avatar {
+    width: 100px;
+    height: 128px;
+    border-radius: 12px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.doctor-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 卡片内容 */
+.card-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    height: 100%;
+    padding: 4px 0;
+}
+
+.doctor-name {
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 1.2;
+    color: #000;
+    margin-bottom: 4px;
+}
+
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1.27;
+    border-radius: 100px;
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(15px);
+    color: #FFFFFF;
+    white-space: nowrap;
+}
+
+.doctor-description {
+    font-size: 11px; /* 修改：将字体大小从12px减小到11px */
+    font-weight: 400;
+    line-height: 1.67;
+    color: rgba(0, 0, 0, 0.5);
+    flex: 1;
+    overflow: hidden; /* 隐藏超出的部分 */
+    text-overflow: ellipsis; /* 显示省略号 */
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* 限制显示的行数，可以修改这个数字 */
+    -webkit-box-orient: vertical;
+}
+
+/* 箭头按钮 */
+.card-arrow {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.arrow-icon {
+    width: 29px;
+    height: 29px;
+    transition: transform 0.2s ease;
+}
+
+.ai-card:hover .arrow-icon {
+    transform: translateX(2px);
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+    .mobile-container {
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+    }
+    
+    .status-bar {
+        padding-left: 20px;
+    }
+}
