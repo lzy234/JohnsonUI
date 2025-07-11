@@ -1,0 +1,702 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(180deg, #E8E8E8 18%, #F1F1F1 31%);
+    min-height: 100vh;
+    color: #000;
+}
+
+.app-container {
+    max-width: 390px;
+    margin: 0 auto;
+    position: relative;
+    min-height: 100vh;
+    padding-bottom: 100px;
+}
+
+/* 顶部问题区域 */
+.question-section {
+    padding: 60px 20px 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.question-card {
+    background: linear-gradient(90deg, #FB7C6E 0%, #EB1701 100%);
+    border: 1px solid #FFFFFF;
+    border-radius: 16px;
+    padding: 16px;
+    max-width: 256px;
+    box-shadow: -2px 4px 10px 0px rgba(145, 145, 145, 0.05),
+                -7px 17px 18px 0px rgba(145, 145, 145, 0.04),
+                -15px 37px 24px 0px rgba(145, 145, 145, 0.03);
+}
+
+.question-text {
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+/* 返回按钮 */
+.back-button {
+    position: absolute;
+    top: 60px;
+    left: 20px;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(14px);
+    cursor: pointer;
+    box-shadow: 0px 4px 8px 0px rgba(172, 172, 172, 0.2);
+}
+
+.back-button img {
+    width: 15px;
+    height: 15px;
+}
+
+/* 用户头像 */
+.user-avatar {
+    position: absolute;
+    top: 132px;
+    left: 40px;
+    width: 100px;
+    height: 63px;
+    border: 0.75px solid rgba(255, 255, 255, 0.5);
+    border-radius: 42px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #F5E8E8 0%, #ECEFF2 100%);
+    box-shadow: 0px 3.19px 4.26px 0px rgba(42, 42, 42, 0.36);
+}
+
+.user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 主要内容区域 */
+.main-content {
+    padding: 0 20px;
+    margin-top: 80px;
+}
+
+/* 卡片通用样式 */
+.card {
+    background: rgba(240, 240, 240, 0.6);
+    border: 1px solid;
+    border-image: linear-gradient(45deg, 
+        rgba(64, 64, 64, 0.4) 2.9%, 
+        rgba(64, 64, 64, 0.25) 8.9%, 
+        rgba(255, 255, 255, 0.5) 16.7%, 
+        rgba(255, 255, 255, 0.5) 30.1%, 
+        rgba(64, 64, 64, 0.25) 47.5%, 
+        #F9F9F9 56.4%, 
+        rgba(255, 255, 255, 0.5) 79.8%, 
+        rgba(249, 249, 249, 0.5) 90.8%) 1;
+    border-radius: 20px;
+    backdrop-filter: blur(4px);
+    margin-bottom: 20px;
+    box-shadow: -2px 4px 10px 0px rgba(145, 145, 145, 0.05),
+                -7px 17px 18px 0px rgba(145, 145, 145, 0.04),
+                -15px 37px 24px 0px rgba(145, 145, 145, 0.03);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+.card-header img {
+    width: 24px;
+    height: 24px;
+}
+
+.card-header h3 {
+    font-size: 16px;
+    font-weight: 500;
+    color: #000;
+}
+
+/* 视频部分 */
+.video-section {
+    position: relative;
+}
+
+.video-player {
+    margin: 12px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(12px);
+    position: relative;
+}
+
+.video-content {
+    height: 183px;
+    background: url('images/background.png') center/cover;
+    position: relative;
+}
+
+.video-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(180deg, 
+        rgba(0, 0, 0, 0) 0%, 
+        rgba(0, 0, 0, 0.31) 51.5%, 
+        rgba(0, 0, 0, 0.7) 100%);
+}
+
+.video-controls {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 2;
+}
+
+.play-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.play-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 36px;
+    background: rgba(0, 0, 0, 0.4);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.play-btn img {
+    width: 20px;
+    height: 20px;
+    filter: invert(1);
+}
+
+.time-display {
+    color: white;
+    font-size: 14px;
+}
+
+.control-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.control-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 36px;
+    background: rgba(0, 0, 0, 0.4);
+    border: none;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.progress-bar {
+    position: absolute;
+    bottom: 36px;
+    left: 12px;
+    right: 12px;
+    z-index: 2;
+}
+
+.progress-track {
+    height: 12px;
+    position: relative;
+}
+
+.progress-track::before {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 4px;
+}
+
+.progress-fill {
+    position: absolute;
+    top: 4px;
+    left: 0;
+    height: 4px;
+    background: white;
+    border-radius: 4px;
+}
+
+.progress-knob {
+    position: absolute;
+    top: 0;
+    width: 12px;
+    height: 12px;
+    background: white;
+    border-radius: 50%;
+    transform: translateX(-50%);
+}
+
+/* 时间轴 */
+.timeline-section {
+    padding: 20px 24px;
+}
+
+.timeline-section h4 {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.4);
+    margin-bottom: 16px;
+    letter-spacing: 0.4em;
+}
+
+.timeline {
+    position: relative;
+    height: 32px;
+    background: rgba(0, 0, 0, 0.08);
+    border-radius: 100px;
+    margin-bottom: 20px;
+    padding: 0 12px;
+}
+
+.timeline-track {
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.timeline-marker {
+    position: absolute;
+    font-size: 10px;
+    color: #A4A4A4;
+    transform: translateX(-50%);
+}
+
+.current-time-indicator {
+    position: absolute;
+    top: -12px;
+    transform: translateX(-50%);
+}
+
+.time-badge {
+    background: linear-gradient(90deg, #FB7C6E 0%, #EB1701 56.3%);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 510;
+}
+
+/* 手术阶段 */
+.surgery-phases {
+    padding: 0 12px 12px;
+}
+
+.phase-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border-top: 1px solid rgba(215, 215, 215, 1);
+    position: relative;
+}
+
+.phase-item:first-child {
+    border-radius: 8px 8px 0 0;
+}
+
+.phase-item:last-child {
+    border-radius: 0 0 8px 8px;
+}
+
+.phase-label {
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.5);
+    min-width: 52px;
+}
+
+.phase-bar {
+    height: 8px;
+    border-radius: 25px;
+    flex: 1;
+    display: flex;
+    gap: 4px;
+}
+
+.phase-bar.purple {
+    background: linear-gradient(90deg, #AC8CE4 0%, #8F41BF 100%);
+    width: 54px;
+}
+
+.phase-bar.green {
+    background: linear-gradient(90deg, #7FCEA0 0%, #20B94B 100%);
+    width: 78px;
+}
+
+.phase-bar.blue {
+    background: linear-gradient(90deg, #68D0FF 0%, #0F68B2 100%);
+    width: 102px;
+}
+
+.phase-bar.red {
+    background: linear-gradient(90deg, #FB7C6E 0%, #F04E3D 100%);
+    display: flex;
+    gap: 4px;
+}
+
+.phase-bar.red::before {
+    content: '';
+    width: 13px;
+    height: 8px;
+    background: inherit;
+    border-radius: 25px;
+}
+
+.phase-bar.yellow {
+    background: linear-gradient(90deg, #FBAD34 0%, #FBB138 100%);
+    width: 102px;
+}
+
+.phase-item.highlight {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+/* AI回答部分 */
+.ai-answer-section {
+    order: -1;
+    margin-bottom: 40px;
+}
+
+.answer-content {
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    margin-bottom: 16px;
+}
+
+.references-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    padding: 18px 48px;
+}
+
+.references-count {
+    font-size: 14px;
+    font-weight: 500;
+    color: #000;
+}
+
+.info-btn {
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: none;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.reference-items {
+    padding: 0 16px;
+}
+
+.reference-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 16px;
+}
+
+.link-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 12px;
+}
+
+.reference-item p {
+    font-size: 12px;
+    line-height: 1.67;
+    color: rgba(0, 0, 0, 0.5);
+    flex: 1;
+}
+
+.answer-text {
+    padding: 16px;
+    position: relative;
+}
+
+.answer-numbers {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    display: flex;
+    gap: 8px;
+}
+
+.number-badge {
+    width: 16px;
+    height: 16px;
+    background: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.3) 100%);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    backdrop-filter: blur(4px);
+}
+
+.answer-text p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: rgba(0, 0, 0, 0.8);
+    margin-bottom: 12px;
+}
+
+/* 介绍文本 */
+.intro-text {
+    margin: 40px 20px;
+    text-align: left;
+}
+
+.intro-text h2 {
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 1.8;
+    color: #000;
+    margin-bottom: 8px;
+}
+
+.intro-text p {
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 1.8;
+    color: #000;
+}
+
+/* 基本信息部分 */
+.info-grid {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.info-item {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 8px;
+    padding: 8px 12px;
+    backdrop-filter: blur(12px);
+}
+
+.info-label {
+    display: block;
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.5);
+    margin-bottom: 4px;
+}
+
+.info-value {
+    display: block;
+    font-size: 18px;
+    color: #000;
+    font-weight: 400;
+    line-height: 1.33;
+}
+
+.generate-report-btn {
+    margin: 20px auto 32px;
+    padding: 8px 48px;
+    background: linear-gradient(90deg, #FFFFFF 0%, #EB1700 100%);
+    border: none;
+    border-radius: 32px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 18px;
+    font-weight: 500;
+    color: white;
+    cursor: pointer;
+}
+
+.generate-report-btn img {
+    width: 24px;
+    height: 24px;
+}
+
+/* 分析总结部分 */
+.analysis-content {
+    padding: 16px 20px;
+}
+
+.analysis-content p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: rgba(0, 0, 0, 0.8);
+}
+
+/* 推荐学习部分 */
+.learning-content {
+    padding: 20px;
+    display: flex;
+    gap: 24px;
+}
+
+.learning-item {
+    flex: 1;
+}
+
+.learning-video {
+    width: 200px;
+    height: 112px;
+    border-radius: 6px;
+    border: 1px solid #FFFFFF;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.video-thumbnail {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+}
+
+.video-thumbnail.secondary {
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+}
+
+.play-overlay {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.play-overlay img {
+    width: 10px;
+    height: 10px;
+}
+
+.learning-title {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.54;
+    color: rgba(0, 0, 0, 0.8);
+}
+
+/* 底部输入区域 */
+.input-section {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 390px;
+    background: rgba(255, 255, 255, 0.04);
+    padding: 16px 20px;
+    backdrop-filter: blur(12px);
+}
+
+.input-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 24px;
+    padding: 8px;
+    backdrop-filter: blur(12px);
+}
+
+.user-input-avatar {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.user-input-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.question-input {
+    flex: 1;
+    background: none;
+    border: none;
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.5);
+    outline: none;
+    padding: 12px;
+}
+
+.question-input::placeholder {
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.ask-button {
+    padding: 9px 24px;
+    background: linear-gradient(90deg, #F69388 0%, #EC1E08 100%);
+    border: 1px solid #FFFFFF;
+    border-radius: 24px;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+}
+
+/* 响应式设计 */
+@media (max-width: 390px) {
+    .app-container {
+        max-width: 100vw;
+    }
+    
+    .learning-content {
+        flex-direction: column;
+    }
+    
+    .learning-video {
+        width: 100%;
+    }
+} 

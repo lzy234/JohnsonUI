@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI手术复盘助手</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部问题区域 -->
+        <div class="question-section">
+            <div class="question-card">
+                <p class="question-text">腹腔镜左肝切除术中，控制中心静脉压的最佳范围是多少？</p>
+            </div>
+        </div>
+
+        <!-- 返回按钮 -->
+        <div class="back-button">
+            <img src="images/arrow_back.svg" alt="返回">
+        </div>
+
+        <!-- 用户头像 -->
+        <div class="user-avatar">
+            <img src="images/user_avatar.png" alt="用户头像">
+        </div>
+
+        <!-- 主要内容区域 -->
+        <div class="main-content">
+            <!-- AI回答部分 -->
+            <div class="ai-answer-section card">
+                <div class="answer-content">
+                    <div class="references-header">
+                        <span class="references-count">引用资料 3 篇</span>
+                        <button class="info-btn">ⓘ</button>
+                    </div>
+                    
+                    <div class="reference-items">
+                        <div class="reference-item">
+                            <span class="link-icon">🔗</span>
+                            <p>Li M, et al. Effects of low central venous pressure on blood loss during liver resection. Ann Surg. 2012;255(1):147-153.</p>
+                        </div>
+                        <div class="reference-item">
+                            <span class="link-icon">🔗</span>
+                            <p>Johnson S, et al. Intraoperative hemodynamic management for liver surgery: CVP and beyond. Surg Clin North Am. 2016;96(2):323-337.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="answer-text">
+                    <div class="answer-numbers">
+                        <span class="number-badge">1</span>
+                        <span class="number-badge">2</span>
+                        <span class="number-badge">3</span>
+                    </div>
+                    <p>在 <strong>腹腔镜左肝切除术</strong> 中，将中心静脉压控制在 <strong>0–5 cmH₂O</strong> 可有效减少术中出血量，同时维持稳定的循环灌注压非常关键。</p>
+                    <p>部分研究建议，在肝切除阶段可短暂维持中心静脉压低于 5 cmH₂O，但在术中需要根据患者基础状态谨慎调节。</p>
+                    <p>此外，术前充足的血容量准备和适当限制静脉输液，均有助于维持低中心静脉压，同时降低术后并发症发生率。</p>
+                </div>
+            </div>
+
+            <!-- 提示文本 -->
+            <div class="intro-text">
+                <h2>以下是您本次手术的AI复盘</h2>
+                <p>帮助您全面掌握操作细节与优化方向</p>
+            </div>
+
+            <!-- 视频分析部分 -->
+            <div class="video-section card">
+                <div class="card-header">
+                    <img src="images/screen_search.svg" alt="屏幕搜索">
+                    <h3>视频解析</h3>
+                </div>
+                <div class="video-player">
+                    <div class="video-content">
+                        <!-- 视频播放器控件 -->
+                        <div class="video-controls">
+                            <div class="play-controls">
+                                <button class="play-btn">
+                                    <img src="images/play_arrow.svg" alt="播放">
+                                </button>
+                                <span class="time-display">0:00 / 0:10</span>
+                            </div>
+                            <div class="control-buttons">
+                                <button class="control-btn volume-btn">🔊</button>
+                                <button class="control-btn fullscreen-btn">⛶</button>
+                                <button class="control-btn more-btn">⋮</button>
+                            </div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-track">
+                                <div class="progress-fill" style="width: 72%"></div>
+                                <div class="progress-knob" style="left: 70%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 时间轴部分 -->
+                <div class="timeline-section">
+                    <h4>时间轴</h4>
+                    <div class="timeline">
+                        <div class="timeline-track">
+                            <div class="timeline-marker" style="left: 0%">00:00:00</div>
+                            <div class="timeline-marker" style="left: 25%">00:15:00</div>
+                            <div class="timeline-marker" style="left: 50%">00:30:00</div>
+                            <div class="timeline-marker" style="left: 75%">00:45:00</div>
+                        </div>
+                        <div class="current-time-indicator" style="left: 72%">
+                            <div class="time-badge">00:16:17</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 手术阶段 -->
+                <div class="surgery-phases">
+                    <div class="phase-item">
+                        <span class="phase-label">入腹探查</span>
+                        <div class="phase-bar purple"></div>
+                    </div>
+                    <div class="phase-item">
+                        <span class="phase-label">肝门离断</span>
+                        <div class="phase-bar green"></div>
+                    </div>
+                    <div class="phase-item">
+                        <span class="phase-label">肝脏切除</span>
+                        <div class="phase-bar blue"></div>
+                    </div>
+                    <div class="phase-item highlight">
+                        <span class="phase-label">术中出血</span>
+                        <div class="phase-bar red"></div>
+                    </div>
+                    <div class="phase-item">
+                        <span class="phase-label">机械闭合</span>
+                        <div class="phase-bar yellow"></div>
+                    </div>
+                    <div class="phase-item">
+                        <span class="phase-label">冲洗收尾</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 基本信息部分 -->
+            <div class="basic-info-section card">
+                <div class="card-header">
+                    <img src="images/video_settings.svg" alt="基本信息">
+                    <h3>基本信息</h3>
+                </div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">日期</span>
+                        <span class="info-value">2025.7.6</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">术式</span>
+                        <span class="info-value">腹腔镜左肝切除术 – 肝段 II 切除</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">病例</span>
+                        <span class="info-value">肝细胞癌</span>
+                    </div>
+                </div>
+                <button class="generate-report-btn">
+                    <img src="images/picture_as_pdf.svg" alt="PDF">
+                    生成报告
+                </button>
+            </div>
+
+            <!-- 分析总结部分 -->
+            <div class="analysis-section card">
+                <div class="card-header">
+                    <img src="images/network_intel.svg" alt="分析总结">
+                    <h3>分析总结</h3>
+                </div>
+                <div class="analysis-content">
+                    <p>您本次 <strong>腹腔镜左肝切除术</strong>，总时长 90 分钟，术中施夹 12 次，高于同类手术平均 8 次；共发生出血 3 次，累计处理时间 15 分钟，平均每次止血耗时 5 分钟；使用器械：超声刀，中心静脉压控制在 0–30 cmH₂O，腹压维持于 15–17 mmHg，符合标准。</p>
+                </div>
+            </div>
+
+            <!-- 推荐学习部分 -->
+            <div class="learning-section card">
+                <div class="card-header">
+                    <img src="images/books_movies.svg" alt="推荐学习">
+                    <h3>推荐学习</h3>
+                </div>
+                <div class="learning-content">
+                    <div class="learning-item">
+                        <div class="learning-video">
+                            <div class="video-thumbnail"></div>
+                            <div class="play-overlay">
+                                <img src="images/play_arrow.svg" alt="播放">
+                            </div>
+                        </div>
+                        <p class="learning-title">腔镜左肝切除操作全流程解析</p>
+                    </div>
+                    <div class="learning-item">
+                        <div class="learning-video">
+                            <div class="video-thumbnail secondary"></div>
+                        </div>
+                        <p class="learning-title">肝切除术中出血控制与处理技巧</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部输入区域 -->
+        <div class="input-section">
+            <div class="input-container">
+                <div class="user-input-avatar">
+                    <img src="images/user_avatar.png" alt="用户头像">
+                </div>
+                <input type="text" placeholder="输入您的问题..." class="question-input">
+                <button class="ask-button">提问</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
