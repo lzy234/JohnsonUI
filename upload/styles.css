@@ -17,6 +17,8 @@ body {
     margin: 0 auto;
     min-height: 1241px;
     position: relative;
+    background: url('images/background.png') no-repeat center center;
+    background-size: cover;
 }
 
 /* 头部返回按钮 */
@@ -31,8 +33,7 @@ body {
     width: 40px;
     height: 40px;
     background: rgba(255, 255, 255, 0.8);
-    border: 1px solid transparent;
-    border-image: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%) 1;
+    border: none;
     border-radius: 48px;
     box-shadow: 0px 4px 8px 0px rgba(172, 172, 172, 0.2);
     backdrop-filter: blur(14px);
@@ -82,7 +83,7 @@ body {
     left: 20px;
     width: 350px;
     background: rgba(240, 240, 240, 0.6);
-    border: 1px solid;
+    border: 0px solid;
     border-image: conic-gradient(
         from 130deg at 51.71% 36.07%,
         rgba(64, 64, 64, 0.4) 2.92%,
@@ -245,7 +246,7 @@ body {
 
 .view-all-btn {
     background: rgba(255, 255, 255, 0.8);
-    border: 1px solid transparent;
+    border: 0px solid transparent;
     border-image: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%) 1;
     border-radius: 48px;
     box-shadow: 0px 4px 8px 0px rgba(172, 172, 172, 0.2);
@@ -275,7 +276,7 @@ body {
     left: 20px;
     width: 350px;
     background: rgba(240, 240, 240, 0.6);
-    border: 1px solid;
+    border: 0px solid;
     border-image: conic-gradient(
         from 130deg at 51.71% 36.07%,
         rgba(64, 64, 64, 0.4) 2.92%,
@@ -317,6 +318,23 @@ body {
     display: flex;
     align-items: center;
     padding: 0 16px;
+    transition: all 0.2s ease;
+}
+
+/* 聚焦状态样式 */
+.input-wrapper:focus-within {
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 
+        inset 0px 0px 0px 1px rgba(238, 47, 27, 0.8),
+        inset -2px -2px 1px -2px rgba(102, 102, 102, 1),
+        inset 2px 2px 1px -2px rgba(102, 102, 102, 1),
+        inset 3px 3px 0.5px -3.5px rgba(255, 255, 255, 0.5),
+        0px 0px 0px 2px rgba(238, 47, 27, 0.2);
+}
+
+.input-wrapper:focus-within label {
+    color: #EE2F1B;
+    font-weight: 500;
 }
 
 .input-wrapper label {
@@ -338,17 +356,28 @@ body {
     line-height: 1.4;
     color: #000000;
     flex: 1;
-    margin-left: 16px;
+    margin-left: 24px;
+    transition: all 0.2s ease;
 }
 
 .input-wrapper input::placeholder {
     color: rgba(0, 0, 0, 0.4);
+    transition: all 0.2s ease;
+}
+
+.input-wrapper input:focus::placeholder {
+    color: rgba(0, 0, 0, 0.3);
+    transform: translateX(2px);
 }
 
 .input-wrapper select {
     -webkit-appearance: none;
     appearance: none;
     color: rgba(0, 0, 0, 0.4);
+}
+
+.input-wrapper select:focus {
+    color: #000000;
 }
 
 .dropdown-icon {
@@ -395,7 +424,9 @@ body {
 }
 
 .gender-option.selected .radio-btn {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 1) 100%);
+    background: #EE2F1B;
+    border: 0px solid #EE2F1B;
+    box-shadow: 0px 2px 4px rgba(238, 47, 27, 0.3);
 }
 
 .gender-option.selected .radio-btn img {
@@ -408,6 +439,12 @@ body {
     font-size: 14px;
     line-height: 1.71;
     color: #000000;
+    transition: all 0.2s ease;
+}
+
+.gender-option.selected span {
+    color: #EE2F1B;
+    font-weight: 600;
 }
 
 .gender-option:not(.selected) span {
@@ -472,17 +509,6 @@ body {
 }
 
 /* 交互状态样式 */
-.input-wrapper.error {
-    box-shadow: 
-        inset 0px 0px 0px 1px rgba(236, 37, 16, 1),
-        inset -2px -2px 1px -2px rgba(102, 102, 102, 1),
-        inset 2px 2px 1px -2px rgba(102, 102, 102, 1),
-        inset 3px 3px 0.5px -3.5px rgba(255, 255, 255, 0.5);
-}
-
-.input-wrapper input.error {
-    color: #EC2510;
-}
 
 .submit-btn:disabled {
     opacity: 0.7;

@@ -92,23 +92,31 @@
 
             <div class="form-group">
                 <div class="input-wrapper">
-                    <label>医生</label>
-                    <input type="text" value="Dr.Wang" readonly>
+                    <label>医生<span class="required">*</span></label>
+                    <input type="text" placeholder="请输入医生姓名">
                 </div>
             </div>
 
             <div class="form-group">
                 <div class="input-wrapper">
-                    <label>医院</label>
-                    <input type="text" value="复旦大学附属中山医院" readonly>
+                    <label>医院<span class="required">*</span></label>
+                    <input type="text" placeholder="请输入医院名称">
                 </div>
             </div>
 
             <div class="form-group">
                 <div class="input-wrapper">
-                    <label>术式</label>
+                    <label>术式<span class="required">*</span></label>
                     <select>
-                        <option>请选择</option>
+                        <option value="">请选择术式</option>
+                        <option value="左肝切除术">左肝切除术</option>
+                        <option value="右肝切除术">右肝切除术</option>
+                        <option value="肝段切除术">肝段切除术</option>
+                        <option value="肝楔形切除术">肝楔形切除术</option>
+                        <option value="肝移植术">肝移植术</option>
+                        <option value="胆囊切除术">胆囊切除术</option>
+                        <option value="胆管切除术">胆管切除术</option>
+                        <option value="其他">其他</option>
                     </select>
                     <img src="images/arrow_drop_down.svg" alt="下拉" class="dropdown-icon">
                 </div>
@@ -117,21 +125,21 @@
             <div class="form-group">
                 <div class="input-wrapper">
                     <label>出血量<span class="required">*</span></label>
-                    <input type="text" placeholder="医生">
+                    <input type="text" placeholder="请输入出血量（ml）">
                 </div>
             </div>
 
             <div class="form-group">
                 <div class="input-wrapper">
                     <label>BMI<span class="required">*</span></label>
-                    <input type="text" value="37.5">
+                    <input type="text" placeholder="请输入BMI值">
                 </div>
             </div>
 
             <div class="form-group">
                 <div class="input-wrapper">
                     <label>年龄<span class="required">*</span></label>
-                    <input type="text" value="47">
+                    <input type="text" placeholder="请输入年龄">
                 </div>
             </div>
 
@@ -139,10 +147,8 @@
                 <div class="input-wrapper">
                     <label>性别<span class="required">*</span></label>
                     <div class="gender-options">
-                        <div class="gender-option selected">
-                            <div class="radio-btn">
-                                <img src="images/check_circle_small.svg" alt="选中">
-                            </div>
+                        <div class="gender-option">
+                            <div class="radio-btn"></div>
                             <span>男</span>
                         </div>
                         <div class="gender-option">
