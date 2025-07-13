@@ -14,7 +14,7 @@ body {
     height: 844px;
     margin: 0 auto;
     position: relative;
-    background: linear-gradient(180deg, #E8E8E8 37.03%, #F1F1F1 88.22%);
+    background: url('images/background.png') center/cover no-repeat;
     border-radius: 32px;
     overflow: hidden;
 }
@@ -31,7 +31,7 @@ body {
     width: 40px;
     height: 40px;
     background: rgba(255, 255, 255, 0.8);
-    border: 1px solid;
+    border: 0px solid;
     border-image: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%) 1;
     border-radius: 48px;
     display: flex;
@@ -103,6 +103,7 @@ body {
         inset -0.53px -0.53px 0.53px 0px rgba(255, 255, 255, 0.3),
         inset 1.06px 1.06px 4.79px 0px rgba(255, 255, 255, 0.4),
         inset 0.53px 0.53px 0.53px 0px rgba(255, 255, 255, 0.7);
+    overflow: hidden;
 }
 
 .background-decoration::after {
@@ -114,6 +115,16 @@ body {
     height: 57px;
     background: linear-gradient(180deg, #F5E8E8 0%, #ECEFF2 100%);
     border-radius: 72px;
+}
+
+.doctor-avatar {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    z-index: 1;
 }
 
 /* 分析功能卡片 */
@@ -165,8 +176,8 @@ body {
         inset -1.5px -1.5px 0.75px -1.5px rgba(102, 102, 102, 1),
         inset 1.5px 1.5px 0.75px -1.5px rgba(102, 102, 102, 1),
         inset 2.25px 2.25px 0.375px -2.625px rgba(255, 255, 255, 0.5);
-    filter: blur(2.25px);
-    backdrop-filter: blur(9px);
+    filter: blur(1px);
+    backdrop-filter: blur(4px);
 }
 
 /* 卡片位置 */
