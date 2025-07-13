@@ -17,11 +17,16 @@ body {
     position: relative;
     min-height: 100vh;
     padding-bottom: 100px;
+    background-image: url('images/background.png');
+    background-size: 100%;
+    background-position: top;
+    background-repeat: no-repeat;
 }
 
-/* 顶部问题区域 */
-.question-section {
+/* 顶部空白区域 */
+.blank-section {
     padding: 60px 20px 20px;
+    min-height: 150px;  /* 设置最小高度 */
     display: flex;
     justify-content: center;
 }
@@ -96,7 +101,7 @@ body {
 /* 卡片通用样式 */
 .card {
     background: rgba(240, 240, 240, 0.6);
-    border: 1px solid;
+    border: 0px solid;
     border-image: linear-gradient(45deg, 
         rgba(64, 64, 64, 0.4) 2.9%, 
         rgba(64, 64, 64, 0.25) 8.9%, 
