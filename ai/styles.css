@@ -577,7 +577,7 @@ body {
 .learning-content {
     padding: 20px;
     display: flex;
-    gap: 24px;
+    gap: 16px;
 }
 
 .learning-item {
@@ -585,8 +585,9 @@ body {
 }
 
 .learning-video {
-    width: 200px;
-    height: 112px;
+    width: 100%;
+    max-width: 160px;
+    height: 90px;
     border-radius: 6px;
     border: 1px solid #FFFFFF;
     position: relative;
@@ -638,25 +639,26 @@ body {
     width: 100%;
     max-width: 390px;
     background: rgba(255, 255, 255, 0.04);
-    padding: 16px 20px;
+    padding: 16px 16px;
     backdrop-filter: blur(12px);
 }
 
 .input-container {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     background: rgba(255, 255, 255, 0.04);
     border-radius: 24px;
-    padding: 8px;
+    padding: 6px;
     backdrop-filter: blur(12px);
 }
 
 .user-input-avatar {
-    width: 58px;
-    height: 58px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     overflow: hidden;
+    flex-shrink: 0;
 }
 
 .user-input-avatar img {
@@ -691,6 +693,34 @@ body {
     backdrop-filter: blur(4px);
 }
 
+/* 背景装饰 */
+.background-decoration {
+    position: absolute;
+    top: 132px;
+    left: 40px;
+    width: 100.89px;
+    height: 63px;
+    background: linear-gradient(180deg, #F5E8E8 0%, #ECEFF2 100%);
+    border-radius: 42px;
+    border: 0.75px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 
+        0px 3.19px 4.26px 0px rgba(42, 42, 42, 0.36),
+        inset -0.53px -0.53px 0.53px 0px rgba(255, 255, 255, 0.3),
+        inset 1.06px 1.06px 4.79px 0px rgba(255, 255, 255, 0.4),
+        inset 0.53px 0.53px 0.53px 0px rgba(255, 255, 255, 0.7);
+    overflow: hidden;
+}
+
+.doctor-avatar {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    z-index: 1;
+}
+
 /* 响应式设计 */
 @media (max-width: 390px) {
     .app-container {
@@ -699,9 +729,28 @@ body {
     
     .learning-content {
         flex-direction: column;
+        gap: 20px;
+        padding: 16px;
     }
     
     .learning-video {
         width: 100%;
+        max-width: 280px;
+        height: 157px;
+        margin: 0 auto;
+    }
+    
+    .input-section {
+        padding: 12px;
+    }
+    
+    .input-container {
+        gap: 8px;
+        padding: 4px;
+    }
+    
+    .user-input-avatar {
+        width: 40px;
+        height: 40px;
     }
 } 
