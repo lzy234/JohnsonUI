@@ -292,11 +292,8 @@ class AppRouter {
             return;
         }
         
-        // 添加页面切换动画
-        this.addPageTransition(() => {
-            console.log('执行页面跳转到:', url);
-            window.location.href = url;
-        });
+        console.log('执行页面跳转到:', url);
+        window.location.href = url;
     }
 
     /**
@@ -358,65 +355,7 @@ class AppRouter {
         this.initSessionData();
     }
 
-    /**
-     * 添加页面切换动画
-     */
-    addPageTransition(callback) {
-        // 创建过渡遮罩
-        const overlay = document.createElement('div');
-        overlay.className = 'page-transition-overlay';
-        overlay.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(251, 124, 110, 0.9) 0%, rgba(235, 23, 0, 0.9) 100%);
-            z-index: 9999;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 16px;
-            font-weight: 500;
-        `;
-        overlay.innerHTML = `
-            <div style="text-align: center;">
-                <div style="width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.3); border-top: 3px solid white; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px;"></div>
-                <div>页面跳转中...</div>
-            </div>
-        `;
-        
-        // 添加旋转动画
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-            }
-        `;
-        document.head.appendChild(style);
-        
-        document.body.appendChild(overlay);
-        
-        // 页面淡出效果
-        const body = document.body;
-        body.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
-        body.style.opacity = '0.9';
-        body.style.transform = 'scale(0.98)';
-        
-        // 显示遮罩
-        setTimeout(() => {
-            overlay.style.opacity = '1';
-        }, 10);
-        
-        // 执行跳转
-        setTimeout(() => {
-            callback();
-        }, 400);
-    }
+
 
     /**
      * 显示消息提示
