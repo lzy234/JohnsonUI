@@ -64,16 +64,48 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 处理医生选择
     function handleDoctorSelection(doctor, doctorId) {
+        console.log('handleDoctorSelection 被调用:', { doctor, doctorId });
+        
         // 显示选择反馈
         showSelectionFeedback(doctor);
         
-        // 这里可以添加路由逻辑，跳转到对应的AI助手页面
-        console.log(`选择了${doctor.name} - ${doctor.specialty}专家`);
+        // 保存医生信息并跳转到upload页面
+        const doctorData = {
+            id: doctorId,
+            name: doctor.name,
+            specialty: doctor.specialty,
+            expertise: doctor.expertise,
+            description: doctor.description,
+            selectedAt: new Date().toISOString()
+        };
         
-        // 模拟页面跳转（实际项目中应该使用路由）
+        console.log(`选择了${doctor.name} - ${doctor.specialty}专家，数据:`, doctorData);
+        
+        // 使用路由管理器跳转
         setTimeout(() => {
-            alert(`即将进入${doctor.name}的AI助手界面\n专长：${doctor.expertise}`);
-        }, 300);
+            if (window.router) {
+                console.log('准备跳转到upload页面，医生数据:', doctorData);
+                
+                // 先手动保存数据，确保保存成功
+                const saveResult = window.router.savePageData('doctor', doctorData);
+                console.log('手动保存医生数据结果:', saveResult);
+                
+                // 验证保存是否成功
+                const verifyData = window.router.getPageData('doctor');
+                console.log('验证保存的医生数据:', verifyData);
+                
+                if (verifyData) {
+                    // 数据保存成功，执行跳转
+                    window.router.navigateTo('upload', { doctor: doctorData });
+                } else {
+                    console.error('医生数据保存失败');
+                    alert('数据保存失败，请重试');
+                }
+            } else {
+                console.error('路由管理器未初始化');
+                alert('页面加载异常，请刷新页面重试');
+            }
+        }, 1500); // 等待反馈动画完成
     }
 
     // 显示选择反馈动画

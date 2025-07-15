@@ -5,6 +5,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // 初始化页面
 function initializePage() {
+    // 验证数据并显示分析信息
+    if (window.router) {
+        const validation = window.router.validateFlow('analysis');
+        if (!validation.valid) {
+            window.router.showMessage(validation.reason, 'error');
+            if (validation.redirectTo) {
+                setTimeout(() => {
+                    window.router.navigateTo(validation.redirectTo);
+                }, 2000);
+            }
+            return;
+        }
+        
+        // 显示分析的视频信息
+        displayAnalysisInfo();
+    }
+    
     // 启动进度条动画
     animateProgressBar();
     
@@ -13,6 +30,26 @@ function initializePage() {
     
     // 模拟分析进度更新
     simulateAnalysisProgress();
+}
+
+// 显示正在分析的信息
+function displayAnalysisInfo() {
+    const doctorData = window.router.getPageData('doctor');
+    const videoData = window.router.getPageData('video');
+    
+    if (doctorData && videoData) {
+        const titleSection = document.querySelector('.title-section h1');
+        if (titleSection) {
+            titleSection.innerHTML = `
+                视频上传成功！<br>
+                正在为您进行深入手术复盘分析，<br>
+                请稍候…
+                <div style="margin-top: 16px; font-size: 14px; opacity: 0.8; font-weight: normal;">
+                    分析视频：${videoData.name} | AI专家：${doctorData.name}
+                </div>
+            `;
+        }
+    }
 }
 
 // 返回按钮功能
@@ -24,13 +61,15 @@ function goBack() {
     setTimeout(() => {
         backButton.style.transform = 'scale(1)';
         
-        // 这里可以根据实际需求进行页面跳转
-        // 例如：window.history.back() 或 window.location.href = '../upload/index.html'
-        if (window.history.length > 1) {
-            window.history.back();
+        if (window.router) {
+            window.router.goBack();
         } else {
-            // 如果没有历史记录，跳转到上传页面
-            window.location.href = '../upload/index.html';
+            // 降级处理
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = '../upload/index.html';
+            }
         }
     }, 150);
 }
@@ -291,12 +330,24 @@ function showCompletionMessage() {
 
 // 查看结果功能
 function viewResults() {
-    // 这里可以跳转到结果页面
-    console.log('跳转到结果页面');
-    // window.location.href = '../results/index.html';
-    
-    // 临时显示提示
-    alert('分析结果页面开发中...');
+    if (window.router) {
+        // 生成分析结果数据
+        const sessionId = window.router.generateId('session_');
+        const analysisData = {
+            progress: 100,
+            completed_at: new Date().toISOString(),
+            session_id: sessionId
+        };
+        
+        // 保存分析结果
+        window.router.savePageData('analysis', analysisData);
+        
+        // 跳转到AI对话页面
+        window.router.navigateTo('ai', { analysis: analysisData });
+    } else {
+        // 降级处理
+        alert('系统错误，请刷新页面重试');
+    }
 }
 
 // 添加键盘事件支持

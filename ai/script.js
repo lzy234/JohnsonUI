@@ -1,9 +1,100 @@
+// 初始化页面
+function initializePage() {
+    if (window.router) {
+        // 验证访问权限
+        const validation = window.router.validateFlow('ai');
+        if (!validation.valid) {
+            window.router.showMessage(validation.reason, 'error');
+            if (validation.redirectTo) {
+                setTimeout(() => {
+                    window.router.navigateTo(validation.redirectTo);
+                }, 2000);
+            }
+            return;
+        }
+        
+        // 显示综合信息
+        displaySessionInfo();
+    }
+}
+
+// 显示会话信息
+function displaySessionInfo() {
+    const doctorData = window.router.getPageData('doctor');
+    const videoData = window.router.getPageData('video');
+    const patientData = window.router.getPageData('patient');
+    const analysisData = window.router.getPageData('analysis');
+    
+    // 更新基本信息区域
+    if (videoData && patientData) {
+        updateBasicInfo(videoData, patientData);
+    }
+    
+    // 更新页面标题
+    if (doctorData) {
+        updatePageTitle(doctorData);
+    }
+    
+    console.log('会话数据已加载:', { doctorData, videoData, patientData, analysisData });
+}
+
+// 更新基本信息
+function updateBasicInfo(videoData, patientData) {
+    const infoGrid = document.querySelector('.info-grid');
+    if (infoGrid) {
+        infoGrid.innerHTML = `
+            <div class="info-item">
+                <span class="info-label">视频</span>
+                <span class="info-value">${videoData.name}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">术式</span>
+                <span class="info-value">${patientData.surgery}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">医院</span>
+                <span class="info-value">${patientData.hospital}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">医生</span>
+                <span class="info-value">${patientData.doctor}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">患者年龄</span>
+                <span class="info-value">${patientData.age}岁</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">BMI</span>
+                <span class="info-value">${patientData.bmi}</span>
+            </div>
+        `;
+    }
+}
+
+// 更新页面标题
+function updatePageTitle(doctorData) {
+    const introText = document.querySelector('.intro-text');
+    if (introText) {
+        introText.innerHTML = `
+            <h2>以下是您本次手术的AI复盘</h2>
+            <p>由${doctorData.name}（${doctorData.specialty}）为您提供专业分析与建议</p>
+        `;
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+    // 初始化页面数据
+    initializePage();
+    
     // 返回按钮功能
     const backButton = document.querySelector('.back-button');
     if (backButton) {
         backButton.addEventListener('click', function() {
-            window.history.back();
+            if (window.router) {
+                window.router.goBack();
+            } else {
+                window.history.back();
+            }
         });
     }
 
