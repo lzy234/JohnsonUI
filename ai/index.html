@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI手术复盘助手</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
     <div class="app-container">
@@ -164,31 +165,12 @@
                     </div>
                 </div>
             </div>
-            <!-- AI回答部分 -->
-            <div class="ai-answer-section card">
-                <div class="answer-content">
-                    <div class="references-header">
-                        <span class="references-count">引用资料 3 篇</span>
-                        <button class="info-btn">ⓘ</button>
-                    </div>
-                    
-                    <div class="reference-items">
-                        <div class="reference-item">
-                            <span class="link-icon">🔗</span>
-                            <p>Li M, et al. Effects of low central venous pressure on blood loss during liver resection. Ann Surg. 2012;255(1):147-153.</p>
-                        </div>
-                        <div class="reference-item">
-                            <span class="link-icon">🔗</span>
-                            <p>Johnson S, et al. Intraoperative hemodynamic management for liver surgery: CVP and beyond. Surg Clin North Am. 2016;96(2):323-337.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="answer-text">
-                    <p>在 <strong>腹腔镜左肝切除术</strong> 中，将中心静脉压控制在 <strong>0–5 cmH₂O</strong> 可有效减少术中出血量，同时维持稳定的循环灌注压非常关键。</p>
-                    <p>部分研究建议，在肝切除阶段可短暂维持中心静脉压低于 5 cmH₂O，但在术中需要根据患者基础状态谨慎调节。</p>
-                    <p>此外，术前充足的血容量准备和适当限制静脉输液，均有助于维持低中心静脉压，同时降低术后并发症发生率。</p>
-                </div>
+        </div>
+
+        <!-- 对话消息区域 -->
+        <div class="chat-messages-container">
+            <div class="chat-messages" id="chat-messages">
+                <!-- 消息将动态添加到这里 -->
             </div>
         </div>
 

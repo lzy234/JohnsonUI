@@ -53,102 +53,298 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 提问按钮功能
+    // 对话功能相关变量
+    const chatMessages = document.getElementById('chat-messages');
     const askButton = document.querySelector('.ask-button');
     const questionInput = document.querySelector('.question-input');
+    let isWaitingForResponse = false;
 
+    // Markdown渲染函数
+    function renderMarkdown(text) {
+        // 使用marked.js库进行markdown渲染（如果可用）
+        if (typeof marked !== 'undefined') {
+            // 配置marked.js选项
+            marked.setOptions({
+                breaks: true,
+                gfm: true,
+                sanitize: false
+            });
+            return marked.parse(text);
+        } else {
+            // 降级到简单的markdown渲染器
+            let html = text;
+            
+            // 标题
+            html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+            html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+            html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+            
+            // 粗体和斜体
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            
+            // 代码块
+            html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+            html = html.replace(/`(.*?)`/g, '<code>$1</code>');
+            
+            // 链接
+            html = html.replace(/\[([^\]]+)\]\(([^\)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+            
+            // 引用
+            html = html.replace(/^> (.*$)/gim, '<blockquote>$1</blockquote>');
+            
+            // 无序列表
+            html = html.replace(/^\* (.*$)/gim, '<li>$1</li>');
+            html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+            
+            // 有序列表
+            html = html.replace(/^\d+\. (.*$)/gim, '<li>$1</li>');
+            
+            // 换行处理
+            html = html.replace(/\n\n/g, '</p><p>');
+            html = html.replace(/\n/g, '<br>');
+            
+            // 包装段落
+            if (!html.includes('<h') && !html.includes('<ul') && !html.includes('<ol') && !html.includes('<blockquote')) {
+                html = '<p>' + html + '</p>';
+            }
+            
+            return html;
+        }
+    }
+
+    // 创建消息元素
+    function createMessage(content, isUser = false) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${isUser ? 'user' : 'ai'}`;
+        
+        const avatar = document.createElement('div');
+        avatar.className = 'message-avatar';
+        
+        const avatarImg = document.createElement('img');
+        avatarImg.src = isUser ? 'images/user_avatar.png' : 'images/doctor3.png';
+        avatarImg.alt = isUser ? '用户' : 'AI助手';
+        avatar.appendChild(avatarImg);
+        
+        const messageContent = document.createElement('div');
+        messageContent.className = 'message-content';
+        
+        const messageText = document.createElement('div');
+        messageText.className = 'message-text';
+        
+        if (isUser) {
+            messageText.textContent = content;
+        } else {
+            messageText.innerHTML = renderMarkdown(content);
+        }
+        
+        const messageTime = document.createElement('div');
+        messageTime.className = 'message-time';
+        messageTime.textContent = new Date().toLocaleTimeString('zh-CN', { 
+            hour: '2-digit', 
+            minute: '2-digit' 
+        });
+        
+        messageContent.appendChild(messageText);
+        messageContent.appendChild(messageTime);
+        messageDiv.appendChild(avatar);
+        messageDiv.appendChild(messageContent);
+        
+        return messageDiv;
+    }
+
+    // 显示输入状态指示器
+    function showTypingIndicator() {
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'typing-indicator';
+        typingDiv.id = 'typing-indicator';
+        
+        const avatar = document.createElement('div');
+        avatar.className = 'message-avatar';
+        const avatarImg = document.createElement('img');
+        avatarImg.src = 'images/doctor3.png';
+        avatarImg.alt = 'AI助手';
+        avatar.appendChild(avatarImg);
+        
+        const typingDots = document.createElement('div');
+        typingDots.className = 'typing-dots';
+        
+        for (let i = 0; i < 3; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'typing-dot';
+            typingDots.appendChild(dot);
+        }
+        
+        typingDiv.appendChild(avatar);
+        typingDiv.appendChild(typingDots);
+        chatMessages.appendChild(typingDiv);
+        
+        // 显示动画
+        setTimeout(() => {
+            typingDiv.classList.add('show');
+        }, 10);
+        
+        scrollToBottom();
+    }
+
+    // 隐藏输入状态指示器
+    function hideTypingIndicator() {
+        const typingIndicator = document.getElementById('typing-indicator');
+        if (typingIndicator) {
+            typingIndicator.remove();
+        }
+    }
+
+    // 滚动到底部
+    function scrollToBottom() {
+        setTimeout(() => {
+            const container = document.querySelector('.app-container');
+            if (container) {
+                container.scrollTo({
+                    top: container.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }
+        }, 100);
+    }
+
+    // 模拟AI回复
+    function generateAIResponse(userMessage) {
+        const responses = [
+            `根据您提到的"${userMessage}"，我来为您分析相关的手术要点：
+
+## 技术要点分析
+
+**操作建议：**
+- 保持手术野清晰
+- 严格按照操作规范执行
+- 注意监测各项生理指标
+
+**风险控制：**
+- 及时发现并处理异常情况
+- 确保患者安全
+- 遵循最佳实践指南
+
+如需更详细的分析，请告诉我具体的关注点。`,
+            
+            `关于"${userMessage}"这个问题，我建议从以下几个方面考虑：
+
+### 1. 术前准备
+- 充分评估患者状态
+- 制定详细手术计划
+- 准备必要的器械设备
+
+### 2. 术中管理
+- **监测要点**：生命体征、出血情况
+- **操作要点**：精准切除、完整止血
+- **团队协作**：与麻醉师密切配合
+
+### 3. 术后观察
+- 密切观察恢复情况
+- 及时处理并发症
+- 做好后续随访
+
+有什么具体问题需要深入讨论吗？`,
+            
+            `针对您的问题"${userMessage}"，让我分享一些临床经验：
+
+> 在实际操作中，这种情况需要特别注意以下几点：
+
+1. **技术层面**
+   - 选择合适的入路方式
+   - 控制操作力度和速度
+   - 确保充分的暴露视野
+
+2. **安全考虑**
+   - 避免损伤重要结构
+   - 及时识别解剖变异
+   - 保持无菌操作原则
+
+3. **优化建议**
+   - 根据患者个体差异调整策略
+   - 借鉴同行的成功经验
+   - 持续学习新技术发展
+
+希望这些信息对您有帮助。`
+        ];
+        
+        return responses[Math.floor(Math.random() * responses.length)];
+    }
+
+    // 发送消息
+    function sendMessage(message) {
+        if (!message.trim() || isWaitingForResponse) return;
+        
+        isWaitingForResponse = true;
+        
+        // 添加用户消息
+        const userMessage = createMessage(message, true);
+        chatMessages.appendChild(userMessage);
+        scrollToBottom();
+        
+        // 显示输入状态
+        showTypingIndicator();
+        
+        // 模拟AI回复延迟
+        setTimeout(() => {
+            hideTypingIndicator();
+            
+            // 生成AI回复
+            const aiResponse = generateAIResponse(message);
+            const aiMessage = createMessage(aiResponse, false);
+            chatMessages.appendChild(aiMessage);
+            
+            isWaitingForResponse = false;
+            scrollToBottom();
+        }, 1500 + Math.random() * 1000); // 1.5-2.5秒随机延迟
+    }
+
+    // 提问按钮功能
     if (askButton && questionInput) {
         askButton.addEventListener('click', function() {
-            const question = questionInput.value.trim();
-            if (question) {
-                handleNewQuestion(question);
+            const message = questionInput.value.trim();
+            if (message) {
+                sendMessage(message);
                 questionInput.value = '';
             }
         });
 
         // 回车键提交
         questionInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                const question = questionInput.value.trim();
-                if (question) {
-                    handleNewQuestion(question);
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                const message = questionInput.value.trim();
+                if (message) {
+                    sendMessage(message);
                     questionInput.value = '';
                 }
             }
         });
-    }
-
-    // 处理新问题的函数
-    function handleNewQuestion(question) {
-        console.log('新问题:', question);
         
-        // 创建新的问题卡片
-        const newQuestionCard = createQuestionCard(question);
-        
-        // 插入到顶部
-        const questionSection = document.querySelector('.question-section');
-        if (questionSection) {
-            questionSection.innerHTML = '';
-            questionSection.appendChild(newQuestionCard);
-        }
-
-        // 模拟AI回答（这里可以接入真实的AI API）
-        setTimeout(() => {
-            addAIResponse(generateMockResponse(question));
-        }, 1000);
-    }
-
-    // 创建问题卡片
-    function createQuestionCard(question) {
-        const questionCard = document.createElement('div');
-        questionCard.className = 'question-card';
-        
-        const questionText = document.createElement('p');
-        questionText.className = 'question-text';
-        questionText.textContent = question;
-        
-        questionCard.appendChild(questionText);
-        return questionCard;
-    }
-
-    // 添加AI回答
-    function addAIResponse(response) {
-        const existingAnswer = document.querySelector('.ai-answer-section');
-        if (existingAnswer) {
-            // 更新现有回答
-            const answerText = existingAnswer.querySelector('.answer-text');
-            if (answerText) {
-                const paragraphs = answerText.querySelectorAll('p');
-                paragraphs.forEach(p => p.remove());
-                
-                response.split('\n\n').forEach(paragraph => {
-                    if (paragraph.trim()) {
-                        const p = document.createElement('p');
-                        p.innerHTML = paragraph.trim();
-                        answerText.appendChild(p);
-                    }
-                });
+        // 禁用状态管理
+        function updateInputState() {
+            askButton.disabled = isWaitingForResponse;
+            questionInput.disabled = isWaitingForResponse;
+            if (isWaitingForResponse) {
+                askButton.style.opacity = '0.5';
+                questionInput.placeholder = 'AI正在思考中...';
+            } else {
+                askButton.style.opacity = '1';
+                questionInput.placeholder = '输入您的问题...';
             }
         }
-    }
-
-    // 生成模拟回答
-    function generateMockResponse(question) {
-        const responses = {
-            '术中出血': '术中出血的控制需要及时止血，使用电凝或结扎等方法。重要的是保持手术野清晰，避免盲目操作。',
-            '中心静脉压': '中心静脉压的控制对于肝切除手术非常重要，建议维持在0-5 cmH₂O范围内以减少出血。',
-            '手术时间': '手术时间的控制需要平衡手术质量和患者安全，过长的手术时间可能增加并发症风险。',
-            '麻醉管理': '肝切除手术的麻醉管理需要注意肝功能状态，选择合适的麻醉药物和监测方案。'
+        
+        // 监听等待状态变化
+        const originalSendMessage = sendMessage;
+        sendMessage = function(message) {
+            originalSendMessage(message);
+            updateInputState();
+            
+            // 在AI回复后重新启用输入
+            setTimeout(() => {
+                updateInputState();
+            }, 3000);
         };
-
-        // 简单的关键词匹配
-        for (const [keyword, response] of Object.entries(responses)) {
-            if (question.includes(keyword)) {
-                return response;
-            }
-        }
-
-        return '感谢您的提问。根据您的问题，我建议参考相关医学文献和临床指南，结合具体患者情况进行个体化处理。如需更详细的建议，请咨询专业医师。';
     }
 
     // 生成报告按钮功能
@@ -230,20 +426,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let lastScrollTop = 0;
     window.addEventListener('scroll', function() {
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        const questionSection = document.querySelector('.question-section');
-        
-        if (questionSection) {
-            if (scrollTop > lastScrollTop) {
-                // 向下滚动
-                questionSection.style.transform = 'translateY(-10px)';
-                questionSection.style.opacity = '0.9';
-            } else {
-                // 向上滚动
-                questionSection.style.transform = 'translateY(0)';
-                questionSection.style.opacity = '1';
-            }
-        }
-        
         lastScrollTop = scrollTop;
     });
 
