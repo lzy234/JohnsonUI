@@ -363,10 +363,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 发送消息
-    function sendMessage(message) {
+    async function sendMessage(message) {
         if (!message.trim() || isWaitingForResponse) return;
         
         isWaitingForResponse = true;
+        updateInputState(); // 立即更新输入状态
         
         // 添加用户消息
         const userMessage = createMessage(message, true);
@@ -376,18 +377,188 @@ document.addEventListener('DOMContentLoaded', function() {
         // 显示输入状态
         showTypingIndicator();
         
-        // 模拟AI回复延迟
-        setTimeout(() => {
+        try {
+            // 调用后端API进行流式聊天
+            await streamChatWithAPI(message);
+        } catch (error) {
+            console.error('聊天请求失败:', error);
             hideTypingIndicator();
             
-            // 生成AI回复
-            const aiResponse = generateAIResponse(message);
-            const aiMessage = createMessage(aiResponse, false);
-            chatMessages.appendChild(aiMessage);
-            
+            // 显示错误消息
+            const errorMessage = createMessage('抱歉，AI助手暂时无法回应。请稍后再试。', false);
+            chatMessages.appendChild(errorMessage);
+        } finally {
             isWaitingForResponse = false;
+            updateInputState(); // 重新启用输入框
             scrollToBottom();
-        }, 1500 + Math.random() * 1000); // 1.5-2.5秒随机延迟
+        }
+    }
+
+    // 流式聊天API调用
+    async function streamChatWithAPI(message) {
+        const API_BASE_URL = 'http://localhost:8000';
+        
+        const requestData = {
+            message: message,
+            user_id: 'web_user_' + Date.now(),
+            conversation_id: getCurrentConversationId(),
+            stream: true
+        };
+
+        const response = await fetch(`${API_BASE_URL}/api/chat/stream`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestData)
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        
+        hideTypingIndicator();
+        
+        // 创建AI消息容器
+        const aiMessageDiv = document.createElement('div');
+        aiMessageDiv.className = 'message ai';
+        
+        const avatar = document.createElement('div');
+        avatar.className = 'message-avatar';
+        const avatarImg = document.createElement('img');
+        avatarImg.src = 'images/doctor3.png';
+        avatarImg.alt = 'AI助手';
+        avatar.appendChild(avatarImg);
+        
+        const messageContent = document.createElement('div');
+        messageContent.className = 'message-content';
+        
+        const messageText = document.createElement('div');
+        messageText.className = 'message-text';
+        
+        const messageTime = document.createElement('div');
+        messageTime.className = 'message-time';
+        messageTime.textContent = new Date().toLocaleTimeString('zh-CN', { 
+            hour: '2-digit', 
+            minute: '2-digit' 
+        });
+        
+        messageContent.appendChild(messageText);
+        messageContent.appendChild(messageTime);
+        aiMessageDiv.appendChild(avatar);
+        aiMessageDiv.appendChild(messageContent);
+        
+        chatMessages.appendChild(aiMessageDiv);
+        
+        let accumulatedContent = '';
+        
+        try {
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                
+                const chunk = decoder.decode(value);
+                const lines = chunk.split('\n');
+                
+                for (const line of lines) {
+                    if (line.startsWith('data: ')) {
+                        try {
+                            const dataString = line.slice(6).trim();
+                            if (dataString) {
+                                console.log('收到流式数据:', dataString);
+                                const data = JSON.parse(dataString);
+                                console.log('解析后的数据:', data);
+                                await handleStreamResponse(data, messageText, accumulatedContent);
+                                
+                                if (data.type === 'message' && data.content) {
+                                    accumulatedContent += data.content;
+                                }
+                                
+                                if (data.done) {
+                                    console.log('流式响应完成');
+                                    return;
+                                }
+                            }
+                        } catch (e) {
+                            console.warn('解析流式数据失败:', e, '原始数据:', line);
+                        }
+                    }
+                }
+                
+                scrollToBottom();
+            }
+        } catch (error) {
+            console.error('读取流式响应失败:', error);
+            messageText.innerHTML = '连接中断，请重试。';
+        }
+    }
+
+    // 处理流式响应
+    async function handleStreamResponse(data, messageElement, accumulatedContent) {
+        console.log('处理流式响应:', data.type, data);
+        
+        switch (data.type) {
+            case 'init':
+                console.log('流式连接初始化成功:', data.message);
+                break;
+                
+            case 'message':
+                if (data.content) {
+                    const fullContent = accumulatedContent + data.content;
+                    messageElement.innerHTML = renderMarkdown(fullContent);
+                    console.log('更新消息内容，当前长度:', fullContent.length);
+                }
+                break;
+                
+            case 'complete':
+                console.log('聊天完成，使用统计:', data.usage);
+                // 重新启用输入框
+                isWaitingForResponse = false;
+                if (typeof updateInputState === 'function') {
+                    updateInputState();
+                }
+                break;
+                
+            case 'error':
+                console.error('AI响应错误:', data.error);
+                messageElement.innerHTML = '<span style="color: #ff6b6b;">AI回复出现错误，请重试。</span>';
+                // 错误时也要重新启用输入框
+                isWaitingForResponse = false;
+                if (typeof updateInputState === 'function') {
+                    updateInputState();
+                }
+                break;
+                
+            default:
+                console.warn('未知的流式事件类型:', data.type, data);
+                break;
+        }
+    }
+
+    // 获取当前对话ID（支持会话持续）
+    function getCurrentConversationId() {
+        if (!window.conversationId) {
+            window.conversationId = 'conv_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+        return window.conversationId;
+    }
+
+    // 禁用状态管理
+    function updateInputState() {
+        if (askButton && questionInput) {
+            askButton.disabled = isWaitingForResponse;
+            questionInput.disabled = isWaitingForResponse;
+            if (isWaitingForResponse) {
+                askButton.style.opacity = '0.5';
+                questionInput.placeholder = 'AI正在思考中...';
+            } else {
+                askButton.style.opacity = '1';
+                questionInput.placeholder = '输入您的问题...';
+            }
+        }
     }
 
     // 提问按钮功能
@@ -412,30 +583,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // 禁用状态管理
-        function updateInputState() {
-            askButton.disabled = isWaitingForResponse;
-            questionInput.disabled = isWaitingForResponse;
-            if (isWaitingForResponse) {
-                askButton.style.opacity = '0.5';
-                questionInput.placeholder = 'AI正在思考中...';
-            } else {
-                askButton.style.opacity = '1';
-                questionInput.placeholder = '输入您的问题...';
-            }
-        }
-        
-        // 监听等待状态变化
-        const originalSendMessage = sendMessage;
-        sendMessage = function(message) {
-            originalSendMessage(message);
-            updateInputState();
-            
-            // 在AI回复后重新启用输入
-            setTimeout(() => {
-                updateInputState();
-            }, 3000);
-        };
+        // 初始化输入状态
+        updateInputState();
     }
 
     // 生成报告按钮功能
