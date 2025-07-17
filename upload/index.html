@@ -9,164 +9,167 @@
 </head>
 <body>
     <div class="container">
-        <!-- 返回按钮 -->
-        <div class="header">
-            <button class="back-btn">
-                <img src="images/arrow_back.svg" alt="返回">
-            </button>
-        </div>
-
-        <!-- 主标题区域 -->
-        <div class="title-section">
-            <h1>上传手术视频与基本信息</h1>
-            <p>请上传完整手术视频，并填写患者与手术信息，<br>以便AI为您提供精准的手术复盘分析。</p>
-        </div>
-
-        <!-- 视频选择区域 -->
-        <div class="video-section">
-            <div class="section-header">
-                <img src="images/subscriptions.svg" alt="视频">
-                <h2>选择手术视频</h2>
+        <!-- 内容可滚动区域 -->
+        <div class="content-wrapper">
+            <!-- 返回按钮 -->
+            <div class="header">
+                <button class="back-btn">
+                    <img src="images/arrow_back.svg" alt="返回">
+                </button>
             </div>
-            <p class="section-subtitle">以下为您在PC端上传的手术视频</p>
 
-            <!-- 视频列表 -->
-            <div class="video-list">
-                <div class="video-item selected">
-                    <div class="video-thumbnail">
-                        <div class="play-btn">
-                            <img src="images/play_arrow.svg" alt="播放">
+            <!-- 主标题区域 -->
+            <div class="title-section">
+                <h1>上传手术视频与基本信息</h1>
+                <p>请上传完整手术视频，并填写患者与手术信息，<br>以便AI为您提供精准的手术复盘分析。</p>
+            </div>
+
+            <!-- 视频选择区域 -->
+            <div class="video-section">
+                <div class="section-header">
+                    <img src="images/subscriptions.svg" alt="视频">
+                    <h2>选择手术视频</h2>
+                </div>
+                <p class="section-subtitle">以下为您在PC端上传的手术视频</p>
+
+                <!-- 视频列表 -->
+                <div class="video-list">
+                    <div class="video-item selected">
+                        <div class="video-thumbnail">
+                            <div class="play-btn">
+                                <img src="images/play_arrow.svg" alt="播放">
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <h3>左肝切除术_07-06</h3>
+                            <p class="upload-time">上传于 2025年7月6日 10:32</p>
+                            <p class="file-info">204 M｜01:28:49</p>
+                        </div>
+                        <div class="check-icon selected">
+                            <img src="images/check_circle.svg" alt="已选择">
                         </div>
                     </div>
-                    <div class="video-info">
-                        <h3>左肝切除术_07-06</h3>
-                        <p class="upload-time">上传于 2025年7月6日 10:32</p>
-                        <p class="file-info">204 M｜01:28:49</p>
-                    </div>
-                    <div class="check-icon selected">
-                        <img src="images/check_circle.svg" alt="已选择">
-                    </div>
-                </div>
 
-                <div class="video-item">
-                    <div class="video-thumbnail">
-                        <div class="play-btn">
-                            <img src="images/play_arrow.svg" alt="播放">
+                    <div class="video-item">
+                        <div class="video-thumbnail">
+                            <div class="play-btn">
+                                <img src="images/play_arrow.svg" alt="播放">
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <h3>左肝切除术_07-05</h3>
+                            <p class="upload-time">上传于 2025年7月5日 13:32</p>
+                            <p class="file-info">198 M｜01:28:49</p>
+                        </div>
+                        <div class="check-icon">
+                            <img src="images/check_circle.svg" alt="选择">
                         </div>
                     </div>
-                    <div class="video-info">
-                        <h3>左肝切除术_07-05</h3>
-                        <p class="upload-time">上传于 2025年7月5日 13:32</p>
-                        <p class="file-info">198 M｜01:28:49</p>
-                    </div>
-                    <div class="check-icon">
-                        <img src="images/check_circle.svg" alt="选择">
-                    </div>
-                </div>
 
-                <div class="video-item">
-                    <div class="video-thumbnail">
-                        <div class="play-btn">
-                            <img src="images/play_arrow.svg" alt="播放">
+                    <div class="video-item">
+                        <div class="video-thumbnail">
+                            <div class="play-btn">
+                                <img src="images/play_arrow.svg" alt="播放">
+                            </div>
                         </div>
-                    </div>
-                    <div class="video-info">
-                        <h3>左肝切除术_07-04</h3>
-                        <p class="upload-time">上传于 2025年7月4日 16:00</p>
-                        <p class="file-info">340 M｜01:28:49</p>
-                    </div>
-                    <div class="check-icon">
-                        <img src="images/check_circle.svg" alt="选择">
-                    </div>
-                </div>
-            </div>
-
-            <button class="view-all-btn">查看全部历史视频（8）</button>
-        </div>
-
-        <!-- 手术信息区域 -->
-        <div class="info-section">
-            <div class="section-header">
-                <img src="images/movie_info.svg" alt="信息">
-                <h2>完善手术信息</h2>
-            </div>
-
-            <div class="form-group">
-                <div class="input-wrapper">
-                    <label>医生<span class="required">*</span></label>
-                    <input type="text" placeholder="请输入医生姓名">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <div class="input-wrapper">
-                    <label>医院<span class="required">*</span></label>
-                    <input type="text" placeholder="请输入医院名称">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <div class="input-wrapper">
-                    <label>术式<span class="required">*</span></label>
-                    <select>
-                        <option value="">请选择术式</option>
-                        <option value="左肝切除术">左肝切除术</option>
-                        <option value="右肝切除术">右肝切除术</option>
-                        <option value="肝段切除术">肝段切除术</option>
-                        <option value="肝楔形切除术">肝楔形切除术</option>
-                        <option value="肝移植术">肝移植术</option>
-                        <option value="胆囊切除术">胆囊切除术</option>
-                        <option value="胆管切除术">胆管切除术</option>
-                        <option value="其他">其他</option>
-                    </select>
-                    <img src="images/arrow_drop_down.svg" alt="下拉" class="dropdown-icon">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <div class="input-wrapper">
-                    <label>出血量<span class="required">*</span></label>
-                    <input type="text" placeholder="请输入出血量（ml）">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <div class="input-wrapper">
-                    <label>BMI<span class="required">*</span></label>
-                    <input type="text" placeholder="请输入BMI值">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <div class="input-wrapper">
-                    <label>年龄<span class="required">*</span></label>
-                    <input type="text" placeholder="请输入年龄">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <div class="input-wrapper">
-                    <label>性别<span class="required">*</span></label>
-                    <div class="gender-options">
-                        <div class="gender-option">
-                            <div class="radio-btn"></div>
-                            <span>男</span>
+                        <div class="video-info">
+                            <h3>左肝切除术_07-04</h3>
+                            <p class="upload-time">上传于 2025年7月4日 16:00</p>
+                            <p class="file-info">340 M｜01:28:49</p>
                         </div>
-                        <div class="gender-option">
-                            <div class="radio-btn"></div>
-                            <span>女</span>
+                        <div class="check-icon">
+                            <img src="images/check_circle.svg" alt="选择">
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- 提交按钮 -->
-        <div class="submit-section">
-            <button class="submit-btn">
-                <img src="images/tab_search.svg" alt="搜索">
-                提交并开始分析
-            </button>
+                <button class="view-all-btn">查看全部历史视频（8）</button>
+            </div>
+
+            <!-- 手术信息区域 -->
+            <div class="info-section">
+                <div class="section-header">
+                    <img src="images/movie_info.svg" alt="信息">
+                    <h2>完善手术信息</h2>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <label>医生<span class="required">*</span></label>
+                        <input type="text" placeholder="请输入医生姓名">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <label>医院<span class="required">*</span></label>
+                        <input type="text" placeholder="请输入医院名称">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <label>术式<span class="required">*</span></label>
+                        <select>
+                            <option value="">请选择术式</option>
+                            <option value="左肝切除术">左肝切除术</option>
+                            <option value="右肝切除术">右肝切除术</option>
+                            <option value="肝段切除术">肝段切除术</option>
+                            <option value="肝楔形切除术">肝楔形切除术</option>
+                            <option value="肝移植术">肝移植术</option>
+                            <option value="胆囊切除术">胆囊切除术</option>
+                            <option value="胆管切除术">胆管切除术</option>
+                            <option value="其他">其他</option>
+                        </select>
+                        <img src="images/arrow_drop_down.svg" alt="下拉" class="dropdown-icon">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <label>出血量<span class="required">*</span></label>
+                        <input type="text" placeholder="请输入出血量（ml）">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <label>BMI<span class="required">*</span></label>
+                        <input type="text" placeholder="请输入BMI值">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <label>年龄<span class="required">*</span></label>
+                        <input type="text" placeholder="请输入年龄">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <label>性别<span class="required">*</span></label>
+                        <div class="gender-options">
+                            <div class="gender-option">
+                                <div class="radio-btn"></div>
+                                <span>男</span>
+                            </div>
+                            <div class="gender-option">
+                                <div class="radio-btn"></div>
+                                <span>女</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 提交按钮 -->
+            <div class="submit-section">
+                <button class="submit-btn">
+                    <img src="images/tab_search.svg" alt="搜索">
+                    提交并开始分析
+                </button>
+            </div>
         </div>
     </div>
 

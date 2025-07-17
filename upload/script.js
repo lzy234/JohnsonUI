@@ -307,7 +307,9 @@ function initializeGenderSelection() {
 // 表单验证功能
 function initializeFormValidation() {
     const requiredFields = document.querySelectorAll('input[type="text"]:not([readonly])');
+    const surgerySelect = document.querySelector('.input-wrapper select');
     
+    // 为文本输入字段添加验证
     requiredFields.forEach(field => {
         field.addEventListener('blur', function() {
             validateField(this);
@@ -319,6 +321,23 @@ function initializeFormValidation() {
             }
         });
     });
+    
+    // 为下拉选择框添加验证
+    if (surgerySelect) {
+        surgerySelect.addEventListener('change', function() {
+            const wrapper = this.closest('.input-wrapper');
+            wrapper.classList.remove('error');
+            this.classList.remove('error');
+        });
+        
+        surgerySelect.addEventListener('blur', function() {
+            if (!this.value) {
+                const wrapper = this.closest('.input-wrapper');
+                wrapper.classList.add('error');
+                this.classList.add('error');
+            }
+        });
+    }
 }
 
 // 验证单个字段
@@ -346,28 +365,46 @@ function validateField(field) {
 function validateAllFields() {
     let isValid = true;
     const requiredFields = document.querySelectorAll('input[type="text"]:not([readonly])');
+    const surgerySelect = document.querySelector('.input-wrapper select');
     
-    requiredFields.forEach(field => {
-        if (!validateField(field)) {
-            isValid = false;
-        }
-    });
+    // 创建字段标签映射
+    const fieldLabels = {
+        0: '医生',
+        1: '医院',
+        2: '出血量',
+        3: 'BMI',
+        4: '年龄'
+    };
     
     // 验证是否选择了视频
     const selectedVideo = document.querySelector('.video-item.selected');
     if (!selectedVideo) {
         showMessage('请选择一个手术视频', 'error');
-        isValid = false;
+        return false;
+    }
+    
+    // 验证每个文本输入字段
+    for (let i = 0; i < requiredFields.length; i++) {
+        if (!validateField(requiredFields[i])) {
+            showMessage(`请填写${fieldLabels[i]}信息`, 'error');
+            return false;
+        }
+    }
+    
+    // 验证手术类型选择
+    if (surgerySelect && !surgerySelect.value) {
+        showMessage('请选择手术类型', 'error');
+        return false;
     }
     
     // 验证是否选择了性别
     const selectedGender = document.querySelector('.gender-option.selected');
     if (!selectedGender) {
         showMessage('请选择性别', 'error');
-        isValid = false;
+        return false;
     }
     
-    return isValid;
+    return true;
 }
 
 // 提交按钮功能
