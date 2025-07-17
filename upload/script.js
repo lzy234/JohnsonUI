@@ -1,11 +1,186 @@
 // DOM 加载完成后初始化
 document.addEventListener('DOMContentLoaded', function() {
     initializePage();
-    initializeVideoSelection();
+    loadPresetVideos(); // 加载预设视频列表
     initializeGenderSelection();
     initializeFormValidation();
     initializeSubmitButton();
 });
+
+// 加载预设视频列表
+function loadPresetVideos() {
+    // 获取视频列表容器
+    const videoList = document.querySelector('.video-list');
+    if (!videoList) return;
+    
+    // 清空视频列表
+    videoList.innerHTML = '';
+    
+    // 显示加载中状态
+    const loadingDiv = document.createElement('div');
+    loadingDiv.className = 'loading-videos';
+    loadingDiv.style.cssText = 'text-align: center; padding: 20px; color: #666;';
+    loadingDiv.innerHTML = '<div class="loading-spinner" style="margin: 0 auto;"></div><p>加载视频列表中...</p>';
+    videoList.appendChild(loadingDiv);
+    
+    // 从API获取预设视频
+    fetchPresetVideos()
+        .then(videos => {
+            // 移除加载状态
+            videoList.removeChild(loadingDiv);
+            
+            // 添加视频到列表
+            if (videos && videos.length > 0) {
+                videos.forEach((video, index) => {
+                    addPresetVideoToList(video, index === 0); // 第一个视频默认选中
+                });
+            } else {
+                showNoVideosMessage(videoList);
+            }
+        })
+        .catch(error => {
+            console.error('加载预设视频失败:', error);
+            videoList.removeChild(loadingDiv);
+            showNoVideosMessage(videoList, true);
+        });
+}
+
+// 从API获取预设视频
+async function fetchPresetVideos() {
+    try {
+        // 判断开发环境还是生产环境
+        const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const baseUrl = isDev ? 'http://localhost:8000' : '';
+        
+        const response = await fetch(`${baseUrl}/api/videos/preset`);
+        
+        if (!response.ok) {
+            throw new Error(`API响应错误: ${response.status}`);
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('获取预设视频失败:', error);
+        
+        // 如果API请求失败，返回本地模拟数据
+        return [
+            {
+                "id": "video_001",
+                "name": "左肝切除术_07-06",
+                "description": "肝脏手术示范视频",
+                "duration": "01:28:49",
+                "size": "204 MB",
+                "upload_time": "2025-07-06T10:32:00"
+            },
+            {
+                "id": "video_002",
+                "name": "左肝切除术_07-05",
+                "description": "肝脏手术视频第二版",
+                "duration": "01:22:37",
+                "size": "198 MB",
+                "upload_time": "2025-07-05T13:32:00"
+            },
+            {
+                "id": "video_003",
+                "name": "左肝切除术_07-04",
+                "description": "复杂肝脏手术案例",
+                "duration": "01:35:12",
+                "size": "340 MB",
+                "upload_time": "2025-07-04T16:00:00"
+            }
+        ];
+    }
+}
+
+// 显示无视频消息
+function showNoVideosMessage(container, isError = false) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'no-videos-message';
+    messageDiv.style.cssText = 'text-align: center; padding: 30px; color: #666;';
+    
+    if (isError) {
+        messageDiv.innerHTML = '<p>加载视频列表失败，请刷新页面重试</p>';
+    } else {
+        messageDiv.innerHTML = '<p>暂无可用的手术视频</p>';
+    }
+    
+    container.appendChild(messageDiv);
+}
+
+// 将预设视频添加到列表
+function addPresetVideoToList(video, isSelected = false) {
+    const videoList = document.querySelector('.video-list');
+    if (!videoList) return;
+    
+    // 格式化上传时间
+    const uploadDate = new Date(video.upload_time);
+    const formattedDate = `${uploadDate.getFullYear()}年${uploadDate.getMonth() + 1}月${uploadDate.getDate()}日 ${uploadDate.getHours()}:${String(uploadDate.getMinutes()).padStart(2, '0')}`;
+    
+    // 创建视频项
+    const videoItem = document.createElement('div');
+    videoItem.className = `video-item${isSelected ? ' selected' : ''}`;
+    videoItem.dataset.videoId = video.id;
+    
+    videoItem.innerHTML = `
+        <div class="video-thumbnail">
+            <div class="play-btn">
+                <img src="images/play_arrow.svg" alt="播放">
+            </div>
+        </div>
+        <div class="video-info">
+            <h3>${video.name}</h3>
+            <p class="upload-time">上传于 ${formattedDate}</p>
+            <p class="file-info">${video.size}｜${video.duration}</p>
+        </div>
+        <div class="check-icon${isSelected ? ' selected' : ''}">
+            <img src="images/check_circle.svg" alt="${isSelected ? '已选择' : '选择'}">
+        </div>
+    `;
+    
+    // 添加点击事件
+    videoItem.addEventListener('click', function() {
+        const videoItems = document.querySelectorAll('.video-item');
+        
+        videoItems.forEach(item => {
+            item.classList.remove('selected');
+            const checkIcon = item.querySelector('.check-icon');
+            if (checkIcon) checkIcon.classList.remove('selected');
+        });
+        
+        this.classList.add('selected');
+        const checkIcon = this.querySelector('.check-icon');
+        if (checkIcon) checkIcon.classList.add('selected');
+    });
+    
+    // 添加到列表
+    videoList.appendChild(videoItem);
+}
+
+// 格式化文件大小
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 B';
+    
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(0)) + ' ' + sizes[i];
+}
+
+// 格式化视频时长
+function formatVideoDuration(seconds) {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = Math.floor(seconds % 60);
+    
+    let result = '';
+    if (hrs > 0) {
+        result += `${hrs}:${mins < 10 ? '0' : ''}`;
+    }
+    
+    result += `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    return result;
+}
 
 // 初始化页面，显示选择的医生信息
 function initializePage() {
@@ -224,8 +399,30 @@ function handleSubmit() {
         console.log('提交的数据:', formData);
         
         if (window.router) {
-            // 保存视频和患者信息
-            const videoId = window.router.generateId('video_');
+            // 获取选中的视频项
+            const selectedVideoItem = document.querySelector('.video-item.selected');
+            let videoId;
+            
+            if (selectedVideoItem && selectedVideoItem.dataset.videoId) {
+                // 使用选中的预设视频ID
+                videoId = selectedVideoItem.dataset.videoId;
+                
+                // 将视频信息添加到表单数据
+                formData.video = {
+                    ...formData.video,
+                    id: videoId,
+                    isPresetVideo: true
+                };
+            } else {
+                // 如果没有选中的视频，使用默认ID
+                videoId = "video_001";
+                formData.video = {
+                    ...formData.video,
+                    id: videoId,
+                    isPresetVideo: true
+                };
+            }
+            
             const uploadId = window.router.generateId('upload_');
             
             window.router.savePageData('video', {

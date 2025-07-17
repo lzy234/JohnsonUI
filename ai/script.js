@@ -98,6 +98,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // 初始化视频播放器
+    initializeVideoPlayer();
+
     // 播放按钮功能
     const playBtn = document.querySelector('.play-btn');
     let isPlaying = false;
@@ -724,3 +727,277 @@ document.addEventListener('DOMContentLoaded', function() {
 
     console.log('AI手术复盘助手页面已加载完成');
 }); 
+
+// 初始化视频播放器功能
+function initializeVideoPlayer() {
+    // 获取视频播放器元素
+    const videoElement = document.getElementById('surgery-video');
+    const playBtn = document.querySelector('.play-btn');
+    const timeDisplay = document.querySelector('.time-display');
+    const progressFill = document.querySelector('.progress-fill');
+    const progressKnob = document.querySelector('.progress-knob');
+    const progressTrack = document.querySelector('.progress-track');
+    const volumeBtn = document.querySelector('.volume-btn');
+    const fullscreenBtn = document.querySelector('.fullscreen-btn');
+    
+    // 如果没有视频元素，退出
+    if (!videoElement) return;
+    
+    // 从会话数据中获取视频信息
+    if (window.router) {
+        const videoData = window.router.getPageData('video');
+        if (videoData && videoData.id) {
+            console.log('找到视频数据:', videoData);
+            
+            // 如果是预设视频，从API获取
+            if (videoData.isPresetVideo) {
+                loadPresetVideo(videoData.id, videoElement, timeDisplay);
+            } else {
+                // 兼容旧版本：从localStorage获取视频数据
+                const videoSource = localStorage.getItem(videoData.dataKey);
+                if (videoSource) {
+                    console.log('从localStorage加载视频');
+                    videoElement.src = videoSource;
+                    
+                    // 视频元数据加载完成后更新时间显示
+                    videoElement.onloadedmetadata = function() {
+                        timeDisplay.textContent = `0:00 / ${formatTime(videoElement.duration)}`;
+                    };
+                } else {
+                    console.warn('没有找到视频数据');
+                    showMessage('没有找到视频数据，使用默认视频', 'warning');
+                    // 加载默认视频
+                    loadPresetVideo('video_001', videoElement, timeDisplay);
+                }
+            }
+        } else {
+            console.warn('视频数据不完整，使用默认视频');
+            loadPresetVideo('video_001', videoElement, timeDisplay);
+        }
+    } else {
+        console.warn('路由器未初始化，使用默认视频');
+        loadPresetVideo('video_001', videoElement, timeDisplay);
+    }
+    
+    // 播放/暂停按钮点击事件
+    let isPlaying = false;
+    if (playBtn) {
+        playBtn.addEventListener('click', function() {
+            if (videoElement.paused) {
+                videoElement.play();
+                isPlaying = true;
+                // 切换到暂停图标
+                playBtn.innerHTML = '<span style="color: white; font-size: 20px;">⏸</span>';
+                // 添加playing类以隐藏控件
+                videoElement.parentElement.classList.add('playing');
+            } else {
+                videoElement.pause();
+                isPlaying = false;
+                // 切换回播放图标
+                playBtn.innerHTML = '<img src="images/play_arrow.svg" alt="播放" style="width: 20px; height: 20px; filter: invert(1);">';
+                // 移除playing类以显示控件
+                videoElement.parentElement.classList.remove('playing');
+            }
+        });
+    }
+    
+    // 视频时间更新事件
+    videoElement.addEventListener('timeupdate', function() {
+        // 更新时间显示
+        if (timeDisplay) {
+            timeDisplay.textContent = `${formatTime(videoElement.currentTime)} / ${formatTime(videoElement.duration)}`;
+        }
+        
+        // 更新进度条
+        if (progressFill && progressKnob) {
+            const progress = (videoElement.currentTime / videoElement.duration) * 100;
+            progressFill.style.width = `${progress}%`;
+            progressKnob.style.left = `${progress}%`;
+        }
+    });
+    
+    // 视频结束事件
+    videoElement.addEventListener('ended', function() {
+        isPlaying = false;
+        // 切换回播放图标
+        if (playBtn) {
+            playBtn.innerHTML = '<img src="images/play_arrow.svg" alt="播放" style="width: 20px; height: 20px; filter: invert(1);">';
+        }
+        // 移除playing类以显示控件
+        videoElement.parentElement.classList.remove('playing');
+    });
+    
+    // 点击视频内容区域播放/暂停
+    const videoContent = videoElement.parentElement;
+    if (videoContent) {
+        videoContent.addEventListener('click', function(e) {
+            // 避免点击控件时触发
+            if (e.target === videoElement || e.target === videoContent) {
+                if (videoElement.paused) {
+                    videoElement.play();
+                    isPlaying = true;
+                    // 切换到暂停图标
+                    playBtn.innerHTML = '<span style="color: white; font-size: 20px;">⏸</span>';
+                    // 添加playing类以隐藏控件
+                    videoContent.classList.add('playing');
+                } else {
+                    videoElement.pause();
+                    isPlaying = false;
+                    // 切换回播放图标
+                    playBtn.innerHTML = '<img src="images/play_arrow.svg" alt="播放" style="width: 20px; height: 20px; filter: invert(1);">';
+                    // 移除playing类以显示控件
+                    videoContent.classList.remove('playing');
+                }
+            }
+        });
+    }
+    
+    // 进度条拖拽功能
+    if (progressTrack) {
+        progressTrack.addEventListener('click', function(e) {
+            const rect = progressTrack.getBoundingClientRect();
+            const pos = (e.clientX - rect.left) / rect.width;
+            videoElement.currentTime = pos * videoElement.duration;
+        });
+    }
+    
+    // 静音按钮功能
+    if (volumeBtn) {
+        volumeBtn.addEventListener('click', function() {
+            videoElement.muted = !videoElement.muted;
+            volumeBtn.textContent = videoElement.muted ? '🔇' : '🔊';
+        });
+    }
+    
+    // 全屏按钮功能
+    if (fullscreenBtn) {
+        fullscreenBtn.addEventListener('click', function() {
+            if (videoElement.requestFullscreen) {
+                videoElement.requestFullscreen();
+            } else if (videoElement.webkitRequestFullscreen) { /* Safari */
+                videoElement.webkitRequestFullscreen();
+            } else if (videoElement.msRequestFullscreen) { /* IE11 */
+                videoElement.msRequestFullscreen();
+            }
+        });
+    }
+}
+
+// 从API加载预设视频
+async function loadPresetVideo(videoId, videoElement, timeDisplay) {
+    try {
+        console.log(`加载预设视频: ${videoId}`);
+        showMessage(`加载预设视频中，请稍候...`, 'info');
+        
+        // 判断开发环境还是生产环境
+        const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const baseUrl = isDev ? 'http://localhost:8000' : '';
+        
+        // 获取视频数据
+        const response = await fetch(`${baseUrl}/api/videos/${videoId}`);
+        
+        if (!response.ok) {
+            throw new Error(`视频API响应错误: ${response.status}`);
+        }
+        
+        const videoData = await response.json();
+        console.log('获取到视频数据:', videoData);
+        
+        // 设置视频源（优先使用远程URL，如果不可用则使用本地路径）
+        // 在实际环境中，你可能需要补充完整的视频URL路径
+        if (videoData.url) {
+            videoElement.src = videoData.url;
+        } else if (videoData.local_path) {
+            // 根据环境处理本地视频路径
+            if (isDev) {
+                videoElement.src = `${baseUrl}/${videoData.local_path}`;
+            } else {
+                videoElement.src = videoData.local_path;
+            }
+        } else {
+            // 没有可用的视频源，使用预设的视频
+            const fallbackVideos = {
+                'video_001': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+                'video_002': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+                'video_003': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
+            };
+            
+            videoElement.src = fallbackVideos[videoId] || fallbackVideos['video_001'];
+        }
+        
+        // 视频元数据加载完成后更新时间显示
+        videoElement.onloadedmetadata = function() {
+            if (timeDisplay) {
+                timeDisplay.textContent = `0:00 / ${formatTime(videoElement.duration)}`;
+            }
+            showMessage('视频加载完成', 'success');
+        };
+        
+        // 视频加载错误处理
+        videoElement.onerror = function() {
+            console.error('视频加载失败');
+            showMessage('视频加载失败，请检查网络连接', 'error');
+            
+            // 加载备用视频
+            videoElement.src = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+        };
+        
+    } catch (error) {
+        console.error('加载预设视频失败:', error);
+        showMessage('加载视频失败，使用备用视频', 'warning');
+        
+        // 使用备用视频
+        videoElement.src = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+    }
+}
+
+// 格式化视频时间
+function formatTime(seconds) {
+    seconds = Math.floor(seconds);
+    const minutes = Math.floor(seconds / 60);
+    seconds = seconds % 60;
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+}
+
+// 显示消息提示
+function showMessage(message, type = 'info') {
+    // 创建消息元素
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message-toast ${type}`;
+    messageDiv.textContent = message;
+    
+    // 添加样式
+    messageDiv.style.cssText = `
+        position: fixed;
+        top: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 10px 20px;
+        background: ${type === 'error' ? '#ff5252' : type === 'warning' ? '#ffb74d' : '#4caf50'};
+        color: white;
+        border-radius: 8px;
+        z-index: 1000;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+        transition: opacity 0.3s, transform 0.3s;
+        opacity: 0;
+    `;
+    
+    // 添加到页面
+    document.body.appendChild(messageDiv);
+    
+    // 触发动画
+    setTimeout(() => {
+        messageDiv.style.opacity = '1';
+        messageDiv.style.transform = 'translateX(-50%) translateY(10px)';
+    }, 10);
+    
+    // 自动移除
+    setTimeout(() => {
+        messageDiv.style.opacity = '0';
+        messageDiv.style.transform = 'translateX(-50%) translateY(0)';
+        
+        setTimeout(() => {
+            document.body.removeChild(messageDiv);
+        }, 300);
+    }, 3000);
+} 

@@ -65,13 +65,16 @@
                 </div>
                 <div class="video-player">
                     <div class="video-content">
+                        <!-- 实际视频播放器 -->
+                        <video id="surgery-video" class="main-video" poster="images/preview_image.png"></video>
+                        
                         <!-- 视频播放器控件 -->
                         <div class="video-controls">
                             <div class="play-controls">
                                 <button class="play-btn">
                                     <img src="images/play_arrow.svg" alt="播放">
                                 </button>
-                                <span class="time-display">0:00 / 0:10</span>
+                                <span class="time-display">0:00 / 0:00</span>
                             </div>
                             <div class="control-buttons">
                                 <button class="control-btn volume-btn">🔊</button>
@@ -81,8 +84,8 @@
                         </div>
                         <div class="progress-bar">
                             <div class="progress-track">
-                                <div class="progress-fill" style="width: 72%"></div>
-                                <div class="progress-knob" style="left: 70%"></div>
+                                <div class="progress-fill"></div>
+                                <div class="progress-knob"></div>
                             </div>
                         </div>
                     </div>

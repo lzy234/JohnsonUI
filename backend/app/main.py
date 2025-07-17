@@ -4,9 +4,11 @@ FastAPI主应用
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
+import os
 
-from .api import chat, health
+from .api import chat, health, videos
 from .services.config_service import config_service
 from .utils.logger import setup_logger, get_logger
 
@@ -70,6 +72,15 @@ app.add_middleware(
 # 注册路由
 app.include_router(health.router)
 app.include_router(chat.router)
+app.include_router(videos.router, prefix="/api/videos", tags=["videos"])
+
+# 创建视频目录（如果不存在）
+videos_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "videos")
+if not os.path.exists(videos_dir):
+    os.makedirs(videos_dir, exist_ok=True)
+    
+# 添加静态文件服务
+app.mount("/videos", StaticFiles(directory=videos_dir), name="videos")
 
 
 @app.get("/")
