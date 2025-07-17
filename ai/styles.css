@@ -544,6 +544,10 @@ body {
     line-height: 1.33;
 }
 
+.basic-info-section {
+    padding-bottom: 1px;
+}
+
 .generate-report-btn {
     margin: 20px auto 32px;
     padding: 8px 48px;
