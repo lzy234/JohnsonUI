@@ -28,6 +28,7 @@ class ChatRequest(BaseModel):
     conversation_id: Optional[str] = Field(default=None, description="对话ID")
     context: Optional[List[ChatMessage]] = Field(default=None, description="对话上下文")
     stream: bool = Field(default=True, description="是否流式响应")
+    doctor_type: Optional[str] = Field(default=None, description="医生类型，如'wangzhiruo'或'chenguodong'")
 
 
 class ChatResponse(BaseModel):

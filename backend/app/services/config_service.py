@@ -81,14 +81,18 @@ class ConfigService:
         self._config = None
         return self.load_config()
     
-    def get_coze_config(self) -> CozeConfig:
+    def get_coze_config(self, doctor_type: Optional[str] = None) -> CozeConfig:
         """
         获取Coze配置
+        
+        Args:
+            doctor_type: 医生类型，如'wangzhiruo'或'chenguodong'
         
         Returns:
             Coze配置对象
         """
-        return self.get_config().coze
+        config = self.get_config()
+        return config.coze.get_config(doctor_type)
     
     def get_server_config(self) -> ServerConfig:
         """

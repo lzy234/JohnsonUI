@@ -401,11 +401,18 @@ document.addEventListener('DOMContentLoaded', function() {
     async function streamChatWithAPI(message) {
         const API_BASE_URL = 'http://localhost:8000';
         
+        // 从会话数据中获取医生类型
+        const doctorData = window.router.getPageData('doctor');
+        const doctorType = doctorData?.id; // 获取医生ID作为类型标识
+        
+        console.log('使用医生配置:', doctorType || '默认');
+        
         const requestData = {
             message: message,
             user_id: 'web_user_' + Date.now(),
             conversation_id: getCurrentConversationId(),
-            stream: true
+            stream: true,
+            doctor_type: doctorType
         };
 
         const response = await fetch(`${API_BASE_URL}/api/chat/stream`, {

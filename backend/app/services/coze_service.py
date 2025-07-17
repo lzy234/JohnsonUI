@@ -22,38 +22,45 @@ class CozeService:
     
     def __init__(self):
         """初始化Coze服务"""
-        self._coze_client: Optional[Coze] = None
-        self._config: Optional[CozeConfig] = None
+        self._coze_clients = {}
+        self._configs = {}
         
-    def _get_client(self) -> Coze:
+    def _get_client(self, doctor_type: Optional[str] = None) -> Coze:
         """
         获取Coze客户端实例
+        
+        Args:
+            doctor_type: 医生类型，如'wangzhiruo'或'chenguodong'
         
         Returns:
             Coze客户端
         """
-        if self._coze_client is None:
-            self._config = config_service.get_coze_config()
+        if doctor_type not in self._coze_clients:
+            config = config_service.get_coze_config(doctor_type)
+            self._configs[doctor_type] = config
             
             # 创建Coze客户端
-            self._coze_client = Coze(
-                auth=TokenAuth(token=self._config.api_token),
-                base_url=self._config.base_url
+            self._coze_clients[doctor_type] = Coze(
+                auth=TokenAuth(token=config.api_token),
+                base_url=config.base_url
             )
-            logger.info("Coze客户端初始化完成")
+            logger.info(f"Coze客户端初始化完成: {doctor_type or 'default'}")
             
-        return self._coze_client
+        return self._coze_clients[doctor_type]
     
-    def _get_config(self) -> CozeConfig:
+    def _get_config(self, doctor_type: Optional[str] = None) -> CozeConfig:
         """
         获取Coze配置
+        
+        Args:
+            doctor_type: 医生类型，如'wangzhiruo'或'chenguodong'
         
         Returns:
             Coze配置对象
         """
-        if self._config is None:
-            self._config = config_service.get_coze_config()
-        return self._config
+        if doctor_type not in self._configs:
+            self._configs[doctor_type] = config_service.get_coze_config(doctor_type)
+        return self._configs[doctor_type]
     
     async def chat_stream(self, request: ChatRequest) -> AsyncGenerator[StreamEvent, None]:
         """
@@ -66,8 +73,11 @@ class CozeService:
             StreamEvent: 流式事件
         """
         try:
-            client = self._get_client()
-            config = self._get_config()
+            doctor_type = request.doctor_type
+            client = self._get_client(doctor_type)
+            config = self._get_config(doctor_type)
+            
+            logger.info(f"使用医生配置: {doctor_type or 'default'}")
             
             # 构建消息列表
             additional_messages = [Message.build_user_question_text(request.message)]
@@ -176,8 +186,11 @@ class CozeService:
             ChatResponse: 聊天响应
         """
         try:
-            client = self._get_client()
-            config = self._get_config()
+            doctor_type = request.doctor_type
+            client = self._get_client(doctor_type)
+            config = self._get_config(doctor_type)
+            
+            logger.info(f"使用医生配置: {doctor_type or 'default'}")
             
             conversation_id = request.conversation_id or str(uuid4())
             
@@ -248,39 +261,43 @@ class CozeService:
             logger.error(f"单次聊天错误: {e}")
             return ChatResponse(
                 content="",
-                conversation_id=request.conversation_id or str(uuid4()),
-                user_id=request.user_id,
                 error=str(e)
             )
     
-    async def get_bot_info(self) -> Dict[str, Any]:
+    async def get_bot_info(self, doctor_type: Optional[str] = None) -> Dict[str, Any]:
         """
         获取机器人信息
         
+        Args:
+            doctor_type: 医生类型，如'wangzhiruo'或'chenguodong'
+            
         Returns:
             机器人信息
         """
         try:
-            client = self._get_client()
-            config = self._get_config()
+            client = self._get_client(doctor_type)
+            config = self._get_config(doctor_type)
             
-            # 注意：这里可能需要根据实际的Coze SDK API调整
-            # 当前版本可能不直接支持获取机器人信息
-            logger.info(f"获取机器人信息 - Bot ID: {config.bot_id}")
+            bot_info = client.bot.retrieve(bot_id=config.bot_id)
             
-            return {
-                "bot_id": config.bot_id,
-                "base_url": config.base_url,
-                "status": "active"
+            # 提取关键信息
+            result = {
+                "bot_id": bot_info.id,
+                "name": bot_info.name if hasattr(bot_info, 'name') else "未知",
+                "description": bot_info.description if hasattr(bot_info, 'description') else "",
+                "created_at": bot_info.created_at if hasattr(bot_info, 'created_at') else None
             }
+            
+            return result
             
         except Exception as e:
             logger.error(f"获取机器人信息错误: {e}")
-            raise Exception(f"获取机器人信息失败: {e}")
+            return {
+                "error": str(e)
+            }
     
     async def _get_content_from_stream(self, client, config, additional_messages, user_id):
-        """使用流式方式获取内容"""
-        content = ""
+        """获取流式内容作为后备方案"""
         try:
             stream_response = client.chat.stream(
                 bot_id=config.bot_id,
@@ -288,28 +305,23 @@ class CozeService:
                 additional_messages=additional_messages,
             )
             
+            content = ""
             for event in stream_response:
-                if hasattr(event, 'event'):
-                    if event.event == "conversation.message.delta":
-                        if hasattr(event, 'data') and hasattr(event.data, 'content'):
-                            content += event.data.content
-                    elif event.event == "conversation.chat.completed":
-                        break
-                else:
-                    if hasattr(event, 'content'):
-                        content += event.content
+                if hasattr(event, 'message') and hasattr(event.message, 'content'):
+                    content += event.message.content
+                elif hasattr(event, 'content'):
+                    content += event.content
+            return content
         except Exception as e:
-            logger.error(f"流式获取内容失败: {e}")
-            content = "抱歉，AI暂时无法回应。"
-        
-        return content
-
+            logger.error(f"流式获取内容错误: {e}")
+            return "无法获取回复内容，请重试。"
+    
     def reload_client(self) -> None:
-        """重新加载客户端（当配置更新时）"""
-        logger.info("重新加载Coze客户端")
-        self._coze_client = None
-        self._config = None
+        """重新加载客户端"""
+        self._coze_clients = {}
+        self._configs = {}
+        logger.info("Coze客户端已重置")
 
 
-# 全局Coze服务实例
+# 全局服务实例
 coze_service = CozeService() 
