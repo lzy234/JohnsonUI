@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  # 后端服务
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: johnsonui-backend
+    restart: always
+    volumes:
+      - ./backend/videos:/app/videos
+      - ./backend/config:/app/config
+    networks:
+      - johnsonui-network
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  # 前端服务
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: johnsonui-frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+    networks:
+      - johnsonui-network
+
+networks:
+  johnsonui-network:
+    driver: bridge 

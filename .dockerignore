@@ -1,0 +1,33 @@
+# Git
+.git
+.gitignore
+
+# Docker
+.dockerignore
+Dockerfile*
+docker-compose*
+
+# 开发/部署脚本
+deploy*.sh
+install_dependencies.sh
+*.md
+!README.md
+
+# 环境和缓存
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.venv
+*.so
+.Python
+.pytest_cache/
+.coverage
+
+# 日志
+*.log
+
+# 系统文件
+.DS_Store
+Thumbs.db 
