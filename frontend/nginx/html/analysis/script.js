@@ -1,11 +1,5 @@
 // 页面加载完成后执行
 document.addEventListener('DOMContentLoaded', function() {
-    // 初始化路由器
-    if (!window.router && typeof AppRouter !== 'undefined') {
-        window.router = new AppRouter();
-        console.log('Router initialized');
-    }
-    
     initializePage();
 });
 

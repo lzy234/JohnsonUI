@@ -1,0 +1,355 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    overflow: hidden;
+}
+
+.container {
+    width: 390px;
+    height: 844px;
+    margin: 0 auto;
+    position: relative;
+    background: url('images/background.png') center/cover no-repeat;
+    border-radius: 32px;
+    overflow: hidden;
+}
+
+/* 顶部返回按钮 */
+.header {
+    position: absolute;
+    top: 60px;
+    left: 20px;
+    z-index: 10;
+}
+
+.back-button {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.8);
+    border: 0px solid;
+    border-image: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%) 1;
+    border-radius: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    backdrop-filter: blur(14px);
+    box-shadow: 0px 4px 8px 0px rgba(172, 172, 172, 0.2);
+}
+
+.back-button img {
+    width: 15px;
+    height: 15px;
+}
+
+/* 主要内容区域 */
+.main-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 0 20px;
+}
+
+/* 标题区域 */
+.title-section {
+    position: absolute;
+    top: 219px;
+    left: 40px;
+    width: 300px;
+}
+
+.main-title {
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 1.8em;
+    color: #000000;
+    text-align: left;
+}
+
+/* 视频预览 */
+.video-preview {
+    position: absolute;
+    top: 488px;
+    left: 135px;
+    width: 120px;
+    height: 120px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.video-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 背景装饰 */
+.background-decoration {
+    position: absolute;
+    top: 132px;
+    left: 40px;
+    width: 100.89px;
+    height: 63px;
+    background: linear-gradient(180deg, #F5E8E8 0%, #ECEFF2 100%);
+    border-radius: 42px;
+    border: 0.75px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 
+        0px 3.19px 4.26px 0px rgba(42, 42, 42, 0.36),
+        inset -0.53px -0.53px 0.53px 0px rgba(255, 255, 255, 0.3),
+        inset 1.06px 1.06px 4.79px 0px rgba(255, 255, 255, 0.4),
+        inset 0.53px 0.53px 0.53px 0px rgba(255, 255, 255, 0.7);
+    overflow: hidden;
+}
+
+.background-decoration::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 4.89px;
+    width: 93px;
+    height: 57px;
+    background: linear-gradient(180deg, #F5E8E8 0%, #ECEFF2 100%);
+    border-radius: 72px;
+}
+
+.doctor-avatar {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    z-index: 1;
+}
+
+/* 分析功能卡片 */
+.analysis-cards {
+    position: absolute;
+    top: 388px;
+    left: 0;
+    width: 100%;
+    height: 240px;
+}
+
+.card {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.54);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.card.large {
+    padding: 10px 24px;
+    border-radius: 24px;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.4em;
+    box-shadow: 
+        -27px 66px 29px 0px rgba(145, 145, 145, 0.01),
+        inset 0px 0px 22px 0px rgba(242, 242, 242, 1),
+        inset 0px 0px 0px 1px rgba(166, 166, 166, 1),
+        inset -2px -2px 1px -2px rgba(102, 102, 102, 1),
+        inset 2px 2px 1px -2px rgba(102, 102, 102, 1),
+        inset 3px 3px 0.5px -3.5px rgba(255, 255, 255, 0.5);
+}
+
+.card.small {
+    padding: 7.5px 18px;
+    border-radius: 18px;
+    font-size: 9.75px;
+    font-weight: 400;
+    line-height: 1.4em;
+    box-shadow: 
+        inset 0px 0px 16.5px 0px rgba(242, 242, 242, 1),
+        inset 0px 0px 0px 0.75px rgba(166, 166, 166, 1),
+        inset -1.5px -1.5px 0.75px -1.5px rgba(102, 102, 102, 1),
+        inset 1.5px 1.5px 0.75px -1.5px rgba(102, 102, 102, 1),
+        inset 2.25px 2.25px 0.375px -2.625px rgba(255, 255, 255, 0.5);
+    filter: blur(1px);
+    backdrop-filter: blur(4px);
+}
+
+/* 卡片位置 */
+.card:nth-child(1) { /* 识别术中关键步骤 */
+    top: 54px;
+    left: 27px;
+}
+
+.card:nth-child(2) { /* 分析手术操作路径 */
+    top: 0px;
+    left: 86px;
+}
+
+.card:nth-child(3) { /* 生成个性化改进建议 */
+    top: 41px;
+    left: 223px;
+}
+
+.card:nth-child(4) { /* 检测风险与并发症征兆 */
+    top: 175px;
+    left: 50px;
+}
+
+.card:nth-child(5) { /* 对比最佳实践案例 */
+    top: 202px;
+    left: 200px;
+}
+
+/* 装饰性圆点 */
+.decorative-dots {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.dot {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.54);
+    border-radius: 50%;
+    box-shadow: 
+        inset 0px 0px 22px 0px rgba(242, 242, 242, 1),
+        inset 0px 0px 0px 1px rgba(166, 166, 166, 1),
+        inset -2px -2px 1px -2px rgba(102, 102, 102, 1),
+        inset 2px 2px 1px -2px rgba(102, 102, 102, 1),
+        inset 3px 3px 0.5px -3.5px rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(12px);
+}
+
+.dot1 { /* 131, 610, 15x15 */
+    top: 610px;
+    left: 131px;
+    width: 15px;
+    height: 15px;
+}
+
+.dot2 { /* 259, 563, 15x15 */
+    top: 563px;
+    left: 259px;
+    width: 15px;
+    height: 15px;
+}
+
+.dot3 { /* 268, 484, 13x13 */
+    top: 484px;
+    left: 268px;
+    width: 13px;
+    height: 13px;
+}
+
+.dot4 { /* 83, 510, 20x20 */
+    top: 510px;
+    left: 83px;
+    width: 20px;
+    height: 20px;
+}
+
+.dot5 { /* 235, 546, 12x12 */
+    top: 546px;
+    left: 235px;
+    width: 12px;
+    height: 12px;
+}
+
+/* 进度条区域 */
+.progress-section {
+    position: absolute;
+    top: 690px;
+    left: 123px;
+    width: 171px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.progress-bar {
+    width: 132px;
+    height: 8px;
+    background: rgba(212, 212, 212, 0.6);
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-fill {
+    width: 68%;
+    height: 100%;
+    background: linear-gradient(90deg, #FB7C6E 0%, #EB1701 100%);
+    border-radius: 6px;
+    transition: width 0.8s ease;
+}
+
+.progress-text {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.4em;
+    color: #000000;
+    white-space: nowrap;
+}
+
+/* 卡片悬停效果 */
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+        0px 8px 16px 0px rgba(172, 172, 172, 0.3),
+        inset 0px 0px 22px 0px rgba(242, 242, 242, 1),
+        inset 0px 0px 0px 1px rgba(166, 166, 166, 1),
+        inset -2px -2px 1px -2px rgba(102, 102, 102, 1),
+        inset 2px 2px 1px -2px rgba(102, 102, 102, 1),
+        inset 3px 3px 0.5px -3.5px rgba(255, 255, 255, 0.5);
+}
+
+/* 响应式设计 */
+@media (max-width: 390px) {
+    .container {
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+    }
+}
+
+/* 动画效果 */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+.card:nth-child(1) { animation-delay: 0.1s; }
+.card:nth-child(2) { animation-delay: 0.2s; }
+.card:nth-child(3) { animation-delay: 0.3s; }
+.card:nth-child(4) { animation-delay: 0.4s; }
+.card:nth-child(5) { animation-delay: 0.5s; }
+
+.dot {
+    animation: fadeInUp 0.4s ease forwards;
+}
+
+.dot1 { animation-delay: 0.6s; }
+.dot2 { animation-delay: 0.7s; }
+.dot3 { animation-delay: 0.8s; }
+.dot4 { animation-delay: 0.9s; }
+.dot5 { animation-delay: 1.0s; } 

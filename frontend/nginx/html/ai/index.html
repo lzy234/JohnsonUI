@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI手术复盘助手</title>
-    <link rel="stylesheet" href="/ai/styles.css">
+    <link rel="stylesheet" href="styles.css">
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
@@ -16,12 +16,12 @@
 
         <!-- 返回按钮 -->
         <div class="back-button">
-            <img src="/ai/images/arrow_back.svg" alt="返回">
+            <img src="images/arrow_back.svg" alt="返回">
         </div>
 
         <!-- 用户头像 -->
         <div class="background-decoration">
-            <img src="/ai/images/doctor3.png" alt="医生头像" class="doctor-avatar">
+            <img src="images/doctor3.png" alt="医生头像" class="doctor-avatar">
         </div>
 
         <!-- 主要内容区域 -->
@@ -34,7 +34,7 @@
             <!-- 基本信息部分 -->
             <div class="basic-info-section card">
                 <div class="card-header">
-                    <img src="/ai/images/video_settings.svg" alt="基本信息">
+                    <img src="images/video_settings.svg" alt="基本信息">
                     <h3>基本信息</h3>
                 </div>
                 <div class="info-grid">
@@ -52,7 +52,7 @@
                     </div>
                 </div>
                 <button class="generate-report-btn">
-                    <img src="/ai/images/picture_as_pdf.svg" alt="PDF">
+                    <img src="images/picture_as_pdf.svg" alt="PDF">
                     生成报告
                 </button>
             </div>
@@ -60,19 +60,19 @@
             <!-- 视频分析部分 -->
             <div class="video-section card">
                 <div class="card-header">
-                    <img src="/ai/images/screen_search.svg" alt="屏幕搜索">
+                    <img src="images/screen_search.svg" alt="屏幕搜索">
                     <h3>视频解析</h3>
                 </div>
                 <div class="video-player">
                     <div class="video-content">
                         <!-- 实际视频播放器 -->
-                        <video id="surgery-video" class="main-video" poster="/ai/images/preview_image.png"></video>
+                        <video id="surgery-video" class="main-video" poster="images/preview_image.png"></video>
                         
                         <!-- 视频播放器控件 -->
                         <div class="video-controls">
                             <div class="play-controls">
                                 <button class="play-btn">
-                                    <img src="/ai/images/play_arrow.svg" alt="播放">
+                                    <img src="images/play_arrow.svg" alt="播放">
                                 </button>
                                 <span class="time-display">0:00 / 0:00</span>
                             </div>
@@ -138,7 +138,7 @@
             <!-- 分析总结部分 -->
             <div class="analysis-section card">
                 <div class="card-header">
-                    <img src="/ai/images/network_intel.svg" alt="分析总结">
+                    <img src="images/network_intel.svg" alt="分析总结">
                     <h3>分析总结</h3>
                 </div>
                 <div class="analysis-content">
@@ -148,7 +148,7 @@
             <!-- 推荐学习部分 -->
             <div class="learning-section card">
                 <div class="card-header">
-                    <img src="/ai/images/books_movies.svg" alt="推荐学习">
+                    <img src="images/books_movies.svg" alt="推荐学习">
                     <h3>推荐学习</h3>
                 </div>
                 <div class="learning-content">
@@ -156,7 +156,7 @@
                         <div class="learning-video">
                             <div class="video-thumbnail"></div>
                             <div class="play-overlay">
-                                <img src="/ai/images/play_arrow.svg" alt="播放">
+                                <img src="images/play_arrow.svg" alt="播放">
                             </div>
                         </div>
                         <p class="learning-title">腔镜左肝切除操作全流程解析</p>
@@ -173,7 +173,7 @@
             <!-- 建议问题部分 -->
             <div class="suggested-questions card">
                 <div class="card-header">
-                    <img src="/ai/images/screen_search.svg" alt="建议问题">
+                    <img src="images/screen_search.svg" alt="建议问题">
                     <h3>建议问题</h3>
                 </div>
                 <div class="questions-list">
@@ -201,7 +201,7 @@
         <div class="input-section">
             <div class="input-container">
                 <div class="user-input-avatar">
-                    <img src="/ai/images/user_avatar.png" alt="用户头像">
+                    <img src="images/user_avatar.png" alt="用户头像">
                 </div>
                 <input type="text" placeholder="输入您的问题..." class="question-input">
                 <button class="ask-button">提问</button>
@@ -209,8 +209,8 @@
         </div>
     </div>
 
-    <script src="/Router.js"></script>
+    <script src="../Router.js"></script>
 
-    <script src="/ai/script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html> 

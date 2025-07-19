@@ -1,11 +1,5 @@
 // DOM 加载完成后初始化
 document.addEventListener('DOMContentLoaded', function() {
-    // 初始化路由器
-    if (!window.router && typeof AppRouter !== 'undefined') {
-        window.router = new AppRouter();
-        console.log('Router initialized');
-    }
-    
     initializePage();
     loadPresetVideos(); // 加载预设视频列表
     initializeGenderSelection();

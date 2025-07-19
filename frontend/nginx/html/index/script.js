@@ -1,12 +1,6 @@
 // AI手术复盘助手 - 首页交互逻辑
 
 document.addEventListener('DOMContentLoaded', function() {
-    // 初始化路由器
-    if (!window.router && typeof AppRouter !== 'undefined') {
-        window.router = new AppRouter();
-        console.log('Router initialized');
-    }
-    
     // 获取所有AI助手卡片
     const aiCards = document.querySelectorAll('.ai-card');
     

@@ -83,12 +83,6 @@ function updatePageTitle(doctorData) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // 初始化路由器
-    if (!window.router && typeof AppRouter !== 'undefined') {
-        window.router = new AppRouter();
-        console.log('Router initialized');
-    }
-    
     // 初始化页面数据
     initializePage();
     

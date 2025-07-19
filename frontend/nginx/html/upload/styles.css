@@ -1,0 +1,674 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    overflow: hidden;
+}
+
+.container {
+    width: 390px;
+    height: 844px;
+    margin: 0 auto;
+    position: relative;
+    background: url('images/background.png') center/cover no-repeat;
+    border-radius: 32px;
+    overflow: hidden;
+}
+
+/* 创建可滚动的内容容器 */
+.content-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    padding-bottom: 40px;
+    scroll-behavior: smooth;
+}
+
+/* 自定义滚动条样式 */
+.content-wrapper::-webkit-scrollbar {
+    width: 4px;
+}
+
+.content-wrapper::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.content-wrapper::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+
+.content-wrapper::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+/* 头部返回按钮 */
+.header {
+    position: relative;
+    margin: 60px 0 0 20px;
+    z-index: 10;
+}
+
+.back-btn {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.8);
+    border: none;
+    border-radius: 48px;
+    box-shadow: 0px 4px 8px 0px rgba(172, 172, 172, 0.2);
+    backdrop-filter: blur(14px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.back-btn:hover {
+    transform: scale(1.05);
+}
+
+.back-btn img {
+    width: 15px;
+    height: 15px;
+}
+
+/* 主标题区域 */
+.title-section {
+    padding-top: 30px;
+    margin: 0 20px;
+    width: calc(100% - 40px);
+}
+
+.title-section h1 {
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 1.4;
+    color: #000000;
+    margin-bottom: 12px;
+}
+
+.title-section p {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 1.4;
+    color: rgba(0, 0, 0, 0.5);
+}
+
+/* 视频选择区域 */
+.video-section {
+    margin: 20px 20px;
+    width: calc(100% - 40px);
+    background: rgba(240, 240, 240, 0.6);
+    border: 0px solid;
+    border-image: conic-gradient(
+        from 130deg at 51.71% 36.07%,
+        rgba(64, 64, 64, 0.4) 2.92%,
+        rgba(64, 64, 64, 0.25) 8.92%,
+        rgba(255, 255, 255, 0.5) 16.74%,
+        rgba(255, 255, 255, 0.5) 30.11%,
+        rgba(64, 64, 64, 0.25) 47.46%,
+        rgba(249, 249, 249, 1) 56.44%,
+        rgba(255, 255, 255, 0.5) 79.81%,
+        rgba(249, 249, 249, 0.5) 90.85%
+    ) 1;
+    border-radius: 20px;
+    backdrop-filter: blur(4px);
+    box-shadow: 
+        -2px 4px 10px 0px rgba(145, 145, 145, 0.05),
+        -7px 17px 18px 0px rgba(145, 145, 145, 0.04),
+        -15px 37px 24px 0px rgba(145, 145, 145, 0.03),
+        -27px 66px 29px 0px rgba(145, 145, 145, 0.01),
+        -42px 103px 31px 0px rgba(145, 145, 145, 0);
+    padding: 16px 12px;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.section-header img {
+    width: 24px;
+    height: 24px;
+}
+
+.section-header h2 {
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #000000;
+}
+
+.section-subtitle {
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 1.67;
+    color: rgba(0, 0, 0, 0.5);
+    margin-bottom: 16px;
+}
+
+/* 视频列表 */
+.video-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.video-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 8px;
+    padding: 16px;
+    backdrop-filter: blur(12px);
+    box-shadow: 
+        inset 0px 0px 0px 1px rgba(166, 166, 166, 1),
+        inset -2px -2px 1px -2px rgba(102, 102, 102, 1),
+        inset 2px 2px 1px -2px rgba(102, 102, 102, 1),
+        inset 3px 3px 0.5px -3.5px rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.video-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 
+        inset 0px 0px 0px 1px rgba(166, 166, 166, 1),
+        inset -2px -2px 1px -2px rgba(102, 102, 102, 1),
+        inset 2px 2px 1px -2px rgba(102, 102, 102, 1),
+        inset 3px 3px 0.5px -3.5px rgba(255, 255, 255, 0.5),
+        0px 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.video-thumbnail {
+    width: 96px;
+    height: 54px;
+    background: #ADADAD;
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+}
+
+.play-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 12px;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 9.6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.play-btn img {
+    width: 5.14px;
+    height: 6.31px;
+}
+
+.video-info {
+    flex: 1;
+}
+
+.video-info h3 {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #000000;
+    margin-bottom: 4px;
+}
+
+.upload-time {
+    font-weight: 400;
+    font-size: 10px;
+    line-height: 1.4;
+    color: rgba(0, 0, 0, 0.5);
+    margin-bottom: 2px;
+}
+
+.file-info {
+    font-weight: 400;
+    font-size: 10px;
+    line-height: 1.4;
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.check-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid rgba(120, 120, 120, 0.2);
+    backdrop-filter: blur(37px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.check-icon.selected {
+    background: #EE2F1B;
+    border: none;
+}
+
+.check-icon img {
+    width: 10.91px;
+    height: 8.4px;
+}
+
+.view-all-btn {
+    background: rgba(255, 255, 255, 0.8);
+    border: 0px solid transparent;
+    border-image: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%) 1;
+    border-radius: 48px;
+    box-shadow: 0px 4px 8px 0px rgba(172, 172, 172, 0.2);
+    backdrop-filter: blur(14px);
+    padding: 0 16px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #000000;
+    cursor: pointer;
+    margin: 0 auto;
+    transition: all 0.2s ease;
+}
+
+.view-all-btn:hover {
+    transform: scale(1.02);
+}
+
+/* 手术信息区域 */
+.info-section {
+    margin: 20px 20px;
+    width: calc(100% - 40px);
+    background: rgba(240, 240, 240, 0.6);
+    border: 0px solid;
+    border-image: conic-gradient(
+        from 130deg at 51.71% 36.07%,
+        rgba(64, 64, 64, 0.4) 2.92%,
+        rgba(64, 64, 64, 0.25) 8.92%,
+        rgba(255, 255, 255, 0.5) 16.74%,
+        rgba(255, 255, 255, 0.5) 30.11%,
+        rgba(64, 64, 64, 0.25) 47.46%,
+        rgba(249, 249, 249, 1) 56.44%,
+        rgba(255, 255, 255, 0.5) 79.81%,
+        rgba(249, 249, 249, 0.5) 90.85%
+    ) 1;
+    border-radius: 20px;
+    backdrop-filter: blur(4px);
+    box-shadow: 
+        -2px 4px 10px 0px rgba(145, 145, 145, 0.05),
+        -7px 17px 18px 0px rgba(145, 145, 145, 0.04),
+        -15px 37px 24px 0px rgba(145, 145, 145, 0.03),
+        -27px 66px 29px 0px rgba(145, 145, 145, 0.01),
+        -42px 103px 31px 0px rgba(145, 145, 145, 0);
+    padding: 16px 12px;
+}
+
+/* 表单组件 */
+.form-group {
+    margin-bottom: 8px;
+}
+
+.input-wrapper {
+    position: relative;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 8px;
+    backdrop-filter: blur(12px);
+    box-shadow: 
+        inset 0px 0px 0px 1px rgba(166, 166, 166, 1),
+        inset -2px -2px 1px -2px rgba(102, 102, 102, 1),
+        inset 2px 2px 1px -2px rgba(102, 102, 102, 1),
+        inset 3px 3px 0.5px -3.5px rgba(255, 255, 255, 0.5);
+    height: 48px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    transition: all 0.2s ease;
+}
+
+/* 聚焦状态样式 */
+.input-wrapper:focus-within {
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 
+        inset 0px 0px 0px 1px rgba(238, 47, 27, 0.8),
+        inset -2px -2px 1px -2px rgba(102, 102, 102, 1),
+        inset 2px 2px 1px -2px rgba(102, 102, 102, 1),
+        inset 3px 3px 0.5px -3.5px rgba(255, 255, 255, 0.5),
+        0px 0px 0px 2px rgba(238, 47, 27, 0.2);
+}
+
+.input-wrapper:focus-within label {
+    color: #EE2F1B;
+    font-weight: 500;
+}
+
+.input-wrapper label {
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 1.4;
+    color: rgba(0, 0, 0, 0.5);
+    width: 45px;
+    position: relative;
+}
+
+.input-wrapper input,
+.input-wrapper select {
+    background: transparent;
+    border: none;
+    outline: none;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #000000;
+    flex: 1;
+    margin-left: 24px;
+    transition: all 0.2s ease;
+}
+
+.input-wrapper input::placeholder {
+    color: rgba(0, 0, 0, 0.4);
+    transition: all 0.2s ease;
+}
+
+.input-wrapper input:focus::placeholder {
+    color: rgba(0, 0, 0, 0.3);
+    transform: translateX(2px);
+}
+
+.input-wrapper select {
+    -webkit-appearance: none;
+    appearance: none;
+    color: rgba(0, 0, 0, 0.4);
+}
+
+.input-wrapper select:focus {
+    color: #000000;
+}
+
+.dropdown-icon {
+    position: absolute;
+    right: 12px;
+    width: 10px;
+    height: 5px;
+    pointer-events: none;
+}
+
+.required {
+    color: #EC2510;
+    font-weight: 500;
+    font-size: 12px;
+    margin-left: 4px;
+}
+
+/* 性别选择 */
+.gender-options {
+    display: flex;
+    gap: 16px;
+    margin-left: 32px;
+    flex: 1;
+}
+
+.gender-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.radio-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 1) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(32px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.gender-option.selected .radio-btn {
+    background: #EE2F1B;
+    border: 0px solid #EE2F1B;
+    box-shadow: 0px 2px 4px rgba(238, 47, 27, 0.3);
+}
+
+.gender-option.selected .radio-btn img {
+    width: 9.35px;
+    height: 7.2px;
+}
+
+.gender-option span {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1.71;
+    color: #000000;
+    transition: all 0.2s ease;
+}
+
+.gender-option.selected span {
+    color: #EE2F1B;
+    font-weight: 600;
+}
+
+.gender-option:not(.selected) span {
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.7);
+}
+
+/* 分隔线 */
+.input-wrapper::after {
+    content: '';
+    position: absolute;
+    left: 77px;
+    top: 4px;
+    width: 1px;
+    height: 40px;
+    background: #FFFFFF;
+    box-shadow: 1px 0px 0px 0px rgba(0, 0, 0, 0.05);
+}
+
+.gender-options + .input-wrapper::after {
+    display: none;
+}
+
+/* 提交按钮 */
+.submit-section {
+    display: flex;
+    justify-content: center;
+    margin: 30px auto;
+    width: 254px;
+}
+
+.submit-btn {
+    width: 100%;
+    height: 48px;
+    background: linear-gradient(90deg, #FFFFFF 0%, #EB1700 100%);
+    border: none;
+    border-radius: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 1.33;
+    color: #FFFFFF;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.submit-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0px 8px 24px rgba(235, 23, 0, 0.3);
+}
+
+.submit-btn:active {
+    transform: translateY(0);
+}
+
+.submit-btn img {
+    width: 21px;
+    height: 18px;
+}
+
+/* 交互状态样式 */
+
+.submit-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* 加载动画 */
+.loading-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid #FFFFFF;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    margin-right: 8px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 消息提示 */
+.message-toast {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    padding: 16px 24px;
+    box-shadow: 0px 8px 32px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(20px);
+    z-index: 1000;
+    font-weight: 500;
+    font-size: 14px;
+    color: #000000;
+    max-width: 80vw;
+    text-align: center;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.message-toast.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.message-toast.success {
+    background: rgba(0, 200, 100, 0.1);
+    color: #00C864;
+    border: 1px solid rgba(0, 200, 100, 0.2);
+}
+
+.message-toast.error {
+    background: rgba(236, 37, 16, 0.1);
+    color: #EC2510;
+    border: 1px solid rgba(236, 37, 16, 0.2);
+}
+
+.message-toast.info {
+    background: rgba(235, 23, 0, 0.1);
+    color: #EB1700;
+    border: 1px solid rgba(235, 23, 0, 0.2);
+}
+
+/* 视频项悬浮效果增强 */
+.video-item.selected {
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 
+        inset 0px 0px 0px 1px rgba(235, 23, 0, 0.3),
+        inset -2px -2px 1px -2px rgba(102, 102, 102, 1),
+        inset 2px 2px 1px -2px rgba(102, 102, 102, 1),
+        inset 3px 3px 0.5px -3.5px rgba(255, 255, 255, 0.5);
+}
+
+/* 性别选项悬浮效果 */
+.gender-option:hover .radio-btn {
+    transform: scale(1.05);
+}
+
+.gender-option:not(.selected):hover span {
+    color: rgba(0, 0, 0, 0.8);
+}
+
+/* 错误状态样式 */
+.input-wrapper.error {
+    box-shadow: 
+        inset 0px 0px 0px 1px rgba(236, 37, 16, 0.8),
+        inset -2px -2px 1px -2px rgba(102, 102, 102, 1),
+        inset 2px 2px 1px -2px rgba(102, 102, 102, 1),
+        inset 3px 3px 0.5px -3.5px rgba(255, 255, 255, 0.5),
+        0px 0px 0px 2px rgba(236, 37, 16, 0.2);
+}
+
+.input-wrapper.error label {
+    color: #EC2510;
+}
+
+/* 响应式设计 */
+@media (max-width: 390px) {
+    .container {
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+    }
+    
+    .header {
+        margin-left: 10px;
+    }
+    
+    .title-section {
+        margin: 0 10px;
+        width: calc(100vw - 20px);
+    }
+    
+    .video-section {
+        margin: 20px 10px;
+        width: calc(100vw - 20px);
+    }
+    
+    .info-section {
+        margin: 20px 10px;
+        width: calc(100vw - 20px);
+    }
+    
+    .submit-section {
+        width: calc(100vw - 20px);
+    }
+    
+    .submit-btn {
+        width: 100%;
+    }
+    
+    .message-toast {
+        max-width: 90vw;
+        font-size: 13px;
+    }
+} 
