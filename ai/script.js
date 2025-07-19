@@ -152,6 +152,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const askButton = document.querySelector('.ask-button');
     const questionInput = document.querySelector('.question-input');
     let isWaitingForResponse = false;
+    
+    // 为建议问题添加点击事件
+    const suggestedQuestions = document.querySelectorAll('.question-item');
+    if (suggestedQuestions) {
+        suggestedQuestions.forEach(question => {
+            question.addEventListener('click', function() {
+                const questionText = this.querySelector('.question-text').textContent;
+                if (questionText && !isWaitingForResponse) {
+                    sendMessage(questionText);
+                }
+            });
+        });
+    }
 
     // Markdown渲染函数
     function renderMarkdown(text) {
