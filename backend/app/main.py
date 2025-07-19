@@ -27,7 +27,7 @@ async def lifespan(app: FastAPI):
         config = config_service.load_config()
         logger.info("应用启动完成")
         logger.info(f"服务器配置: {config.server.host}:{config.server.port}")
-        logger.info(f"机器人ID: {config.coze.bot_id}")
+        logger.info(f"机器人ID: {config.coze.get_config().bot_id}")
         
         yield
         
