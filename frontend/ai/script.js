@@ -467,6 +467,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const messageText = document.createElement('div');
         messageText.className = 'message-text';
+        // 初始化空文本，用于收集流式内容
+        messageText.dataset.fullContent = '';
+        
+        // 添加打字动画效果样式
+        messageText.classList.add('typing-animation');
         
         const messageTime = document.createElement('div');
         messageTime.className = 'message-time';
@@ -482,36 +487,68 @@ document.addEventListener('DOMContentLoaded', function() {
         
         chatMessages.appendChild(aiMessageDiv);
         
-        // 不再需要累积内容
-        // let accumulatedContent = '';
-        
         try {
+            let buffer = ''; // 用于处理不完整的JSON
+            let lastUpdateTime = Date.now();
+            const minUpdateInterval = 50; // 最小更新间隔（毫秒）
+            
             while (true) {
                 const { done, value } = await reader.read();
                 if (done) break;
                 
-                const chunk = decoder.decode(value);
-                const lines = chunk.split('\n');
+                const chunk = decoder.decode(value, { stream: true });
+                buffer += chunk;
+                
+                // 处理可能包含多个或不完整事件的缓冲区
+                const lines = buffer.split('\n\n');
+                // 保留最后一行，可能是不完整的
+                buffer = lines.pop() || '';
                 
                 for (const line of lines) {
-                    if (line.startsWith('data: ')) {
+                    if (line.trim() && line.startsWith('data: ')) {
                         try {
                             const dataString = line.slice(6).trim();
                             if (dataString) {
                                 console.log('收到流式数据:', dataString);
                                 const data = JSON.parse(dataString);
                                 console.log('解析后的数据:', data);
-                                // 移除accumulatedContent参数
-                                await handleStreamResponse(data, messageText);
                                 
-                                // 不再需要累积内容
-                                // if (data.type === 'message' && data.content) {
-                                //    accumulatedContent += data.content;
-                                // }
-                                
-                                if (data.done) {
+                                // 处理流式响应
+                                if (data.type === 'message' && data.content) {
+                                    const now = Date.now();
+                                    const prevContent = messageText.dataset.fullContent || '';
+                                    const fullContent = prevContent + data.content;
+                                    messageText.dataset.fullContent = fullContent;
+                                    
+                                    // 限制UI更新频率，避免过于频繁的DOM更新
+                                    if (now - lastUpdateTime >= minUpdateInterval) {
+                                        // 立即渲染最新内容到UI
+                                        messageText.innerHTML = renderMarkdown(fullContent);
+                                        scrollToBottom();
+                                        lastUpdateTime = now;
+                                    }
+                                } else if (data.type === 'init') {
+                                    console.log('流式连接初始化成功:', data.message);
+                                } else if (data.type === 'error') {
+                                    messageText.classList.remove('typing-animation');
+                                    messageText.innerHTML = `<span style="color: #ff6b6b;">AI回复出现错误: ${data.error}</span>`;
+                                    isWaitingForResponse = false;
+                                    updateInputState();
+                                } else if (data.type === 'complete' || data.done) {
                                     console.log('流式响应完成');
-                                    return;
+                                    
+                                    // 确保显示完整的最终内容
+                                    const fullContent = messageText.dataset.fullContent || '';
+                                    if (fullContent) {
+                                        messageText.innerHTML = renderMarkdown(fullContent);
+                                    }
+                                    
+                                    // 移除打字动画效果
+                                    messageText.classList.remove('typing-animation');
+                                    
+                                    isWaitingForResponse = false;
+                                    updateInputState();
+                                    scrollToBottom();
                                 }
                             }
                         } catch (e) {
@@ -520,63 +557,25 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
                 
-                scrollToBottom();
+                // 更新最终内容显示，确保即使在事件之间也有更新
+                const now = Date.now();
+                if (now - lastUpdateTime >= minUpdateInterval) {
+                    const fullContent = messageText.dataset.fullContent || '';
+                    messageText.innerHTML = renderMarkdown(fullContent);
+                    scrollToBottom();
+                    lastUpdateTime = now;
+                }
             }
+            
+            // 移除打字动画效果
+            messageText.classList.remove('typing-animation');
+            
         } catch (error) {
             console.error('读取流式响应失败:', error);
+            messageText.classList.remove('typing-animation');
             messageText.innerHTML = '连接中断，请重试。';
-        }
-    }
-
-    // 处理流式响应
-    async function handleStreamResponse(data, messageElement) {
-        console.log('处理流式响应:', data.type, data);
-        
-        switch (data.type) {
-            case 'init':
-                console.log('流式连接初始化成功:', data.message);
-                // 初始化一个空文本，用于收集完整的流式输出
-                messageElement.dataset.fullContent = '';
-                break;
-                
-            case 'message':
-                if (data.content) {
-                    // 收集完整内容
-                    const prevContent = messageElement.dataset.fullContent || '';
-                    const fullContent = prevContent + data.content;
-                    messageElement.dataset.fullContent = fullContent;
-                    
-                    // 直接渲染完整内容，保持markdown格式的完整性
-                    messageElement.innerHTML = renderMarkdown(fullContent);
-                    
-                    // 滚动到最新内容
-                    scrollToBottom();
-                    console.log('更新流式内容，当前长度:', fullContent.length);
-                }
-                break;
-                
-            case 'complete':
-                console.log('聊天完成，使用统计:', data.usage);
-                // 重新启用输入框
-                isWaitingForResponse = false;
-                if (typeof updateInputState === 'function') {
-                    updateInputState();
-                }
-                break;
-                
-            case 'error':
-                console.error('AI响应错误:', data.error);
-                messageElement.innerHTML = '<span style="color: #ff6b6b;">AI回复出现错误，请重试。</span>';
-                // 错误时也要重新启用输入框
-                isWaitingForResponse = false;
-                if (typeof updateInputState === 'function') {
-                    updateInputState();
-                }
-                break;
-                
-            default:
-                console.warn('未知的流式事件类型:', data.type, data);
-                break;
+            isWaitingForResponse = false;
+            updateInputState();
         }
     }
 

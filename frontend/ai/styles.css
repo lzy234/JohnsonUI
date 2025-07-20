@@ -1128,3 +1128,18 @@ body {
     color: #333;
     font-weight: 400;
 } 
+
+/* 打字动画效果 */
+.typing-animation::after {
+    content: '|';
+    animation: blink 1s step-end infinite;
+    display: inline-block;
+    vertical-align: middle;
+    color: #6c5ce7;
+    font-weight: bold;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+} 

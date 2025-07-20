@@ -72,12 +72,18 @@ class CozeService:
         Yields:
             StreamEvent: 流式事件
         """
+        from ..utils.logger import get_request_id, StreamLogger
+        
+        # 获取当前请求ID并创建流日志记录器
+        request_id = get_request_id()
+        stream_logger = StreamLogger("coze_stream")
+        
         try:
             doctor_type = request.doctor_type
             client = self._get_client(doctor_type)
             config = self._get_config(doctor_type)
             
-            logger.info(f"使用医生配置: {doctor_type or 'default'}")
+            logger.info(f"[{request_id}] 使用医生配置: {doctor_type or 'default'}, bot_id: {config.bot_id}")
             
             # 构建消息列表
             additional_messages = [Message.build_user_question_text(request.message)]
@@ -89,86 +95,200 @@ class CozeService:
                     if msg.role == MessageRole.USER:
                         context_messages.append(Message.build_user_question_text(msg.content))
                     elif msg.role == MessageRole.ASSISTANT:
-                        # 注意：Coze SDK可能不直接支持添加助手消息，这里可能需要调整
+                        # 注意：某些SDK可能不直接支持添加助手消息
                         pass
                 
                 additional_messages = context_messages + additional_messages
             
             conversation_id = request.conversation_id or str(uuid4())
-            logger.info(f"开始流式聊天 - 用户: {request.user_id}, 对话: {conversation_id}")
+            logger.info(f"[{request_id}] 开始流式聊天 - 用户: {request.user_id}, 对话: {conversation_id}")
             
-            # 调用Coze流式聊天API
-            stream_response = client.chat.stream(
-                bot_id=config.bot_id,
-                user_id=request.user_id or config.default_user_id,
-                additional_messages=additional_messages,
-            )
+            # 添加日志记录请求详情
+            logger.debug(f"[{request_id}] 流式聊天请求详情 - bot_id: {config.bot_id}, user_id: {request.user_id or config.default_user_id}")
             
-            # 处理流式响应
-            for event in stream_response:
-                try:
-                    logger.debug(f"收到流式事件: {event}")
+            try:
+                # 设置超时并添加重试
+                timeout_seconds = config.timeout or 30
+                retries = config.max_retries or 3
+                retry_count = 0
+                
+                while True:
+                    try:
+                        # 调用Coze流式聊天API
+                        stream_response = client.chat.stream(
+                            bot_id=config.bot_id,
+                            user_id=request.user_id or config.default_user_id,
+                            additional_messages=additional_messages,
+                        )
+                        break  # 成功获取响应流，跳出重试循环
+                    except Exception as retry_error:
+                        retry_count += 1
+                        if retry_count > retries:
+                            logger.error(f"[{request_id}] 重试次数超过上限 ({retries}次)，放弃请求", exc_info=True)
+                            raise
+                        
+                        logger.warning(f"[{request_id}] 流式请求失败，尝试重试 ({retry_count}/{retries}): {retry_error}")
+                        await asyncio.sleep(1)  # 重试前等待1秒
+                
+                # 使用异步模式处理流式响应
+                content_accumulator = ""
+                event_count = 0
+                
+                # 初始化事件发送计时器和超时检测
+                last_event_time = asyncio.get_event_loop().time()
+                start_time = last_event_time
+                
+                # 异步处理流式响应
+                for event in stream_response:
+                    event_count += 1
+                    current_time = asyncio.get_event_loop().time()
+                    time_since_last = current_time - last_event_time
                     
-                    # 检查事件类型
+                    # 检测事件超时
+                    if time_since_last > timeout_seconds:
+                        logger.warning(f"[{request_id}] 流式事件接收超时 ({time_since_last:.1f}秒 > {timeout_seconds}秒)")
+                    
+                    stream_logger.log_event("received", metadata={"event_type": getattr(event, 'event', 'unknown')})
+                    logger.debug(f"[{request_id}] 收到原始流式事件 #{event_count}, 间隔: {time_since_last:.3f}秒")
+                    
+                    # 提取内容
+                    content = None
+                    is_complete = False
+                    usage_info = None
+                    
+                    # 根据事件类型处理
                     if hasattr(event, 'event'):
-                        # 处理消息增量事件
-                        if event.event == ChatEventType.CONVERSATION_MESSAGE_DELTA:
-                            content = ""
+                        # 处理具有event字段的事件
+                        event_type = getattr(event, 'event', None)
+                        
+                        if event_type == ChatEventType.CONVERSATION_MESSAGE_DELTA:
+                            # 消息增量事件 - 从各种可能的属性中提取内容
                             if hasattr(event, 'message') and hasattr(event.message, 'content'):
                                 content = event.message.content
                             elif hasattr(event, 'data') and hasattr(event.data, 'content'):
                                 content = event.data.content
+                            elif hasattr(event, 'delta') and hasattr(event.delta, 'content'):
+                                content = event.delta.content
+                            elif hasattr(event, 'content'):
+                                content = event.content
+                                
+                        elif event_type == ChatEventType.CONVERSATION_CHAT_COMPLETED:
+                            # 对话完成事件 - 提取使用统计
+                            is_complete = True
+                            stream_logger.log_event("complete")
                             
-                            if content:
-                                yield StreamEvent(
-                                    type=StreamEventType.MESSAGE,
-                                    content=content,
-                                    done=False
-                                )
-                        
-                        # 处理对话完成事件
-                        elif event.event == ChatEventType.CONVERSATION_CHAT_COMPLETED:
-                            usage_info = None
-                            if hasattr(event, 'chat') and hasattr(event.chat, 'usage'):
-                                usage_info = {
-                                    "token_count": getattr(event.chat.usage, 'token_count', 0),
-                                    "input_count": getattr(event.chat.usage, 'input_count', 0),
-                                    "output_count": getattr(event.chat.usage, 'output_count', 0)
-                                }
-                            elif hasattr(event, 'data') and hasattr(event.data, 'usage'):
-                                usage_info = {
-                                    "token_count": getattr(event.data.usage, 'token_count', 0),
-                                    "input_count": getattr(event.data.usage, 'input_count', 0),
-                                    "output_count": getattr(event.data.usage, 'output_count', 0)
-                                }
-                            
-                            yield StreamEvent(
-                                type=StreamEventType.COMPLETE,
-                                done=True,
-                                usage=usage_info
-                            )
-                            logger.info(f"流式聊天完成 - 对话: {conversation_id}")
-                            break
+                            # 尝试从各种可能的属性中提取使用统计
+                            for attr_path in ['chat.usage', 'data.usage', 'usage']:
+                                parts = attr_path.split('.')
+                                obj = event
+                                found = True
+                                
+                                for part in parts:
+                                    if hasattr(obj, part):
+                                        obj = getattr(obj, part)
+                                    else:
+                                        found = False
+                                        break
+                                
+                                if found and obj:
+                                    usage_info = {
+                                        "token_count": getattr(obj, 'token_count', 0),
+                                        "input_count": getattr(obj, 'input_count', 0),
+                                        "output_count": getattr(obj, 'output_count', 0)
+                                    }
+                                    break
+                                    
                     else:
-                        # 处理其他类型的事件或直接访问content
-                        content = ""
-                        if hasattr(event, 'content'):
-                            content = event.content
-                        elif hasattr(event, 'message') and hasattr(event.message, 'content'):
-                            content = event.message.content
+                        # 处理没有event字段的事件
+                        # 尝试直接访问内容属性
+                        for attr_name in ['content', 'message.content', 'delta.content']:
+                            parts = attr_name.split('.')
+                            obj = event
+                            found = True
+                            
+                            for part in parts:
+                                if hasattr(obj, part):
+                                    obj = getattr(obj, part)
+                                else:
+                                    found = False
+                                    break
+                            
+                            if found and isinstance(obj, str):
+                                content = obj
+                                break
+                    
+                    # 处理提取的内容
+                    if content:
+                        content_accumulator += content
+                        stream_logger.log_event("content", content=content)
                         
-                        if content:
+                        # 发送消息事件
+                        yield StreamEvent(
+                            type=StreamEventType.MESSAGE,
+                            content=content,
+                            done=False
+                        )
+                        # 重置内容累积器
+                        content_accumulator = ""
+                    
+                    # 如果是完成事件，发送完成通知
+                    if is_complete:
+                        # 发送任何剩余的内容
+                        if content_accumulator:
                             yield StreamEvent(
                                 type=StreamEventType.MESSAGE,
-                                content=content,
+                                content=content_accumulator,
                                 done=False
                             )
-                except Exception as event_error:
-                    logger.warning(f"处理单个流式事件时出错: {event_error}, 事件: {event}")
-                    continue
+                            content_accumulator = ""
+                        
+                        # 发送完成事件
+                        yield StreamEvent(
+                            type=StreamEventType.COMPLETE,
+                            done=True,
+                            usage=usage_info
+                        )
+                        elapsed = current_time - start_time
+                        stream_logger.log_summary("完成")
+                        logger.info(f"[{request_id}] 流式聊天完成 - 对话: {conversation_id}, 共处理 {event_count} 个事件，总耗时: {elapsed:.2f}秒")
+                        break
+                    
+                    # 更新最后事件时间
+                    last_event_time = current_time
+                
+                # 确保任何剩余的内容都被发送
+                if content_accumulator:
+                    yield StreamEvent(
+                        type=StreamEventType.MESSAGE,
+                        content=content_accumulator,
+                        done=False
+                    )
+                    
+                    # 发送完成事件（如果之前没有明确完成）
+                    yield StreamEvent(
+                        type=StreamEventType.COMPLETE,
+                        done=True
+                    )
+                    elapsed = asyncio.get_event_loop().time() - start_time
+                    stream_logger.log_summary("完成(隐式)")
+                    logger.info(f"[{request_id}] 流式聊天完成(隐式) - 对话: {conversation_id}, 共处理 {event_count} 个事件，总耗时: {elapsed:.2f}秒")
+                
+            except Exception as stream_error:
+                elapsed = asyncio.get_event_loop().time() - start_time if 'start_time' in locals() else 0
+                logger.error(f"[{request_id}] 流式处理过程中发生错误 (耗时: {elapsed:.2f}秒): {stream_error}", exc_info=True)
+                stream_logger.log_summary("失败", str(stream_error))
+                
+                yield StreamEvent(
+                    type=StreamEventType.ERROR,
+                    error=f"流式处理错误: {stream_error}",
+                    done=True
+                )
                     
         except Exception as e:
-            logger.error(f"流式聊天错误: {e}")
+            logger.error(f"[{request_id}] 流式聊天初始化错误: {e}", exc_info=True)
+            if 'stream_logger' in locals():
+                stream_logger.log_summary("初始化失败", str(e))
+                
             yield StreamEvent(
                 type=StreamEventType.ERROR,
                 error=str(e),
