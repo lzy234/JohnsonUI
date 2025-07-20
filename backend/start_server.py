@@ -8,16 +8,16 @@ import uvicorn
 if __name__ == "__main__":
     print("🚀 启动医学手术复盘AI Agent后端服务")
     print("=" * 50)
-    print("📖 API文档: http://localhost:8000/docs")
-    print("🏥 健康检查: http://localhost:8000/api/health")
-    print("💬 聊天API: http://localhost:8000/api/chat/stream")
+    print("📖 API文档: http://0.0.0.0:8000/docs")
+    print("🏥 健康检查: http://0.0.0.0:8000/api/health")
+    print("💬 聊天API: http://0.0.0.0:8000/api/chat/stream")
     print("\n按 Ctrl+C 停止服务器")
     print("-" * 50)
     
     try:
         uvicorn.run(
             "app.main:app",
-            host="localhost",
+            host="0.0.0.0",
             port=8000,
             reload=True,
             reload_dirs=["app"],
