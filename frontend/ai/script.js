@@ -418,7 +418,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 流式聊天API调用
     async function streamChatWithAPI(message) {
-        const API_BASE_URL = 'http://localhost:8000';
+        const API_BASE_URL = 'http://120.55.79.77:8000';
         
         // 从会话数据中获取医生类型
         const doctorData = window.router.getPageData('doctor');
