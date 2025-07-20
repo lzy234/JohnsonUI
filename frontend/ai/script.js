@@ -482,7 +482,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         chatMessages.appendChild(aiMessageDiv);
         
-        let accumulatedContent = '';
+        // 不再需要累积内容
+        // let accumulatedContent = '';
         
         try {
             while (true) {
@@ -500,11 +501,13 @@ document.addEventListener('DOMContentLoaded', function() {
                                 console.log('收到流式数据:', dataString);
                                 const data = JSON.parse(dataString);
                                 console.log('解析后的数据:', data);
-                                await handleStreamResponse(data, messageText, accumulatedContent);
+                                // 移除accumulatedContent参数
+                                await handleStreamResponse(data, messageText);
                                 
-                                if (data.type === 'message' && data.content) {
-                                    accumulatedContent += data.content;
-                                }
+                                // 不再需要累积内容
+                                // if (data.type === 'message' && data.content) {
+                                //    accumulatedContent += data.content;
+                                // }
                                 
                                 if (data.done) {
                                     console.log('流式响应完成');
@@ -526,19 +529,29 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 处理流式响应
-    async function handleStreamResponse(data, messageElement, accumulatedContent) {
+    async function handleStreamResponse(data, messageElement) {
         console.log('处理流式响应:', data.type, data);
         
         switch (data.type) {
             case 'init':
                 console.log('流式连接初始化成功:', data.message);
+                // 初始化一个空文本，用于收集完整的流式输出
+                messageElement.dataset.fullContent = '';
                 break;
                 
             case 'message':
                 if (data.content) {
-                    const fullContent = accumulatedContent + data.content;
+                    // 收集完整内容
+                    const prevContent = messageElement.dataset.fullContent || '';
+                    const fullContent = prevContent + data.content;
+                    messageElement.dataset.fullContent = fullContent;
+                    
+                    // 直接渲染完整内容，保持markdown格式的完整性
                     messageElement.innerHTML = renderMarkdown(fullContent);
-                    console.log('更新消息内容，当前长度:', fullContent.length);
+                    
+                    // 滚动到最新内容
+                    scrollToBottom();
+                    console.log('更新流式内容，当前长度:', fullContent.length);
                 }
                 break;
                 

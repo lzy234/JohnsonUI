@@ -143,15 +143,19 @@ body {
 /* 视频部分 */
 .video-section {
     position: relative;
+    margin-bottom: 20px;
+    padding-bottom: 20px; /* 增加底部内边距 */
 }
 
 .video-player {
     margin: 12px;
+    margin-bottom: 0; /* 移除底部外边距，改用padding-bottom */
     border-radius: 8px;
     overflow: hidden;
     background: rgba(255, 255, 255, 0.04);
     backdrop-filter: blur(12px);
     position: relative;
+    padding-bottom: 0px; /* 增加足够的底部内边距 */
 }
 
 .video-content {
@@ -194,7 +198,7 @@ body {
 
 .video-controls {
     position: absolute;
-    bottom: 12px;
+    bottom: 10px; /* 调整：将控制按钮位置移至底部 */
     left: 12px;
     right: 12px;
     display: flex;
@@ -254,7 +258,7 @@ body {
 
 .progress-bar {
     position: absolute;
-    bottom: 36px;
+    bottom: 50px; /* 微调：减少与按钮的距离 */
     left: 12px;
     right: 12px;
     z-index: 3;
