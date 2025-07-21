@@ -35,9 +35,38 @@ function displaySessionInfo() {
         updatePageTitle(doctorData);
         // 更新分析内容
         updateAnalysisContent(doctorData);
+        // 更新医生头像
+        updateDoctorAvatar(doctorData);
     }
     
     console.log('会话数据已加载:', { doctorData, videoData, patientData, analysisData });
+}
+
+// 更新医生头像
+function updateDoctorAvatar(doctorData) {
+    if (!doctorData) return;
+    
+    // 更新背景装饰中的头像
+    const doctorAvatar = document.querySelector('.doctor-avatar');
+    if (doctorAvatar) {
+        if (doctorData.id === 'wang' || doctorData.name.includes('王')) {
+            doctorAvatar.src = '/ai/images/doctor1.png';
+        } else if (doctorData.id === 'chen' || doctorData.name.includes('陈')) {
+            doctorAvatar.src = '/ai/images/doctor3.png';
+        }
+    }
+    
+    // 更新聊天消息中使用的头像
+    const aiAvatars = document.querySelectorAll('.message.ai .message-avatar img');
+    if (aiAvatars.length > 0) {
+        const aiAvatarSrc = (doctorData.id === 'wang' || doctorData.name.includes('王')) 
+            ? '/ai/images/doctor1.png' 
+            : '/ai/images/doctor3.png';
+        
+        aiAvatars.forEach(avatar => {
+            avatar.src = aiAvatarSrc;
+        });
+    }
 }
 
 // 更新分析内容
@@ -271,8 +300,23 @@ document.addEventListener('DOMContentLoaded', function() {
         avatar.className = 'message-avatar';
         
         const avatarImg = document.createElement('img');
-        avatarImg.src = isUser ? 'images/user_avatar.png' : 'images/doctor3.png';
-        avatarImg.alt = isUser ? '用户' : 'AI助手';
+        
+        // 获取医生数据
+        const doctorData = window.router.getPageData('doctor');
+        
+        if (isUser) {
+            avatarImg.src = 'images/user_avatar.png';
+            avatarImg.alt = '用户';
+        } else {
+            // 根据医生类型选择头像
+            if (doctorData && (doctorData.id === 'wang' || doctorData.name.includes('王'))) {
+                avatarImg.src = 'images/doctor1.png';
+            } else {
+                avatarImg.src = 'images/doctor3.png';
+            }
+            avatarImg.alt = 'AI助手';
+        }
+        
         avatar.appendChild(avatarImg);
         
         const messageContent = document.createElement('div');
@@ -311,7 +355,17 @@ document.addEventListener('DOMContentLoaded', function() {
         const avatar = document.createElement('div');
         avatar.className = 'message-avatar';
         const avatarImg = document.createElement('img');
-        avatarImg.src = 'images/doctor3.png';
+        
+        // 获取医生数据
+        const doctorData = window.router.getPageData('doctor');
+        
+        // 根据医生类型选择头像
+        if (doctorData && (doctorData.id === 'wang' || doctorData.name.includes('王'))) {
+            avatarImg.src = 'images/doctor1.png';
+        } else {
+            avatarImg.src = 'images/doctor3.png';
+        }
+        
         avatarImg.alt = 'AI助手';
         avatar.appendChild(avatarImg);
         
@@ -494,7 +548,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const avatar = document.createElement('div');
         avatar.className = 'message-avatar';
         const avatarImg = document.createElement('img');
-        avatarImg.src = 'images/doctor3.png';
+        
+        // 根据医生类型选择头像
+        if (doctorData && (doctorData.id === 'wang' || doctorData.name.includes('王'))) {
+            avatarImg.src = 'images/doctor1.png';
+        } else {
+            avatarImg.src = 'images/doctor3.png';
+        }
+        
         avatarImg.alt = 'AI助手';
         avatar.appendChild(avatarImg);
         
