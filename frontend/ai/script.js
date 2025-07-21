@@ -33,9 +33,45 @@ function displaySessionInfo() {
     // 更新页面标题
     if (doctorData) {
         updatePageTitle(doctorData);
+        // 更新分析内容
+        updateAnalysisContent(doctorData);
     }
     
     console.log('会话数据已加载:', { doctorData, videoData, patientData, analysisData });
+}
+
+// 更新分析内容
+function updateAnalysisContent(doctorData) {
+    const analysisContent = document.querySelector('.analysis-content');
+    if (!analysisContent || !doctorData) return;
+    
+    let content = '';
+    
+    // 根据医生ID或名称显示不同的分析内容
+    if (doctorData.id === 'chen' || doctorData.name.includes('陈')) {
+        // 陈专家的分析
+        content = `<p>胸外--陈专家<br>
+            手术术式：胸腔镜右上肺叶切除术<br>
+            手术时间：150min<br>
+            手术总出血量：68ml<br>
+            使用器械：腔镜电凝钳、穿刺器、内视镜<br>
+            单肺通气时间：120min<br>
+            术中胸腔引流量：约50ml</p>`;
+    } else if (doctorData.id === 'wang' || doctorData.name.includes('王')) {
+        // 王专家的分析
+        content = `<p>普外--王专家<br>
+            手术术式：腹腔镜右半结肠切除术<br>
+            手术时间：117min<br>
+            手术总出血量：80ml<br>
+            使用器械：超声刀、双极电凝<br>
+            肠道准备情况：术前48小时清肠完成，无残渣<br>
+            吻合方式：机械吻合，端侧回肠-结肠吻合</p>`;
+    } else {
+        // 默认分析内容
+        content = `<p>暂无该专家的分析内容</p>`;
+    }
+    
+    analysisContent.innerHTML = content;
 }
 
 // 更新基本信息

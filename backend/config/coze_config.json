@@ -11,7 +11,7 @@
     "wangzhiruo": {
       "api_token": "pat_BabxcQ99cMx3ziABhpRshfsvXBP0HXgke1wVigzquPehrOshql7Fr61kXhex1S4b",
       "base_url": "https://api.coze.cn",
-      "bot_id": "7519906707460898851", 
+      "bot_id": "7529385539578429491", 
       "default_user_id": "wang_user",
       "timeout": 30,
       "max_retries": 3,
