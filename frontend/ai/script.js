@@ -481,6 +481,10 @@ document.addEventListener('DOMContentLoaded', function() {
         isWaitingForResponse = true;
         updateInputState(); // 立即更新输入状态
         
+        // 移除现有的建议问题卡片
+        const existingSuggestions = document.querySelectorAll('.chat-messages .suggested-questions');
+        existingSuggestions.forEach(elem => elem.remove());
+        
         // 添加用户消息
         const userMessage = createMessage(message, true);
         chatMessages.appendChild(userMessage);
@@ -642,6 +646,13 @@ document.addEventListener('DOMContentLoaded', function() {
                                     
                                     // 移除打字动画效果
                                     messageText.classList.remove('typing-animation');
+                                    
+                                    // 先移除已有的建议问题卡片（如果有）
+                                    const existingSuggestions = document.querySelectorAll('.chat-messages .suggested-questions');
+                                    existingSuggestions.forEach(elem => elem.remove());
+                                    
+                                    // 然后添加新的建议问题（仅在最后一条消息后）
+                                    addSuggestedQuestionsToMessage(aiMessageDiv);
                                     
                                     isWaitingForResponse = false;
                                     updateInputState();
@@ -1135,4 +1146,121 @@ function showMessage(message, type = 'info') {
             document.body.removeChild(messageDiv);
         }, 300);
     }, 3000);
+} 
+
+// 添加新函数 - 在AI消息下方添加建议问题
+function addSuggestedQuestionsToMessage(messageDiv) {
+    // 从页面中获取建议问题列表
+    const originalQuestions = document.querySelectorAll('.suggested-questions .question-item');
+    if (!originalQuestions || originalQuestions.length === 0) return;
+    
+    // 创建问题容器
+    const questionsContainer = document.createElement('div');
+    questionsContainer.className = 'suggested-questions card';
+    
+    // 添加卡片头部
+    const cardHeader = document.createElement('div');
+    cardHeader.className = 'card-header';
+    
+    const headerImg = document.createElement('img');
+    headerImg.src = '/ai/images/screen_search.svg';
+    headerImg.alt = '建议问题';
+    
+    const headerTitle = document.createElement('h3');
+    headerTitle.textContent = '建议问题';
+    
+    cardHeader.appendChild(headerImg);
+    cardHeader.appendChild(headerTitle);
+    questionsContainer.appendChild(cardHeader);
+    
+    // 创建问题列表
+    const questionsList = document.createElement('div');
+    questionsList.className = 'questions-list';
+    
+    // 为每个原始问题创建一个副本
+    originalQuestions.forEach(original => {
+        const questionItem = document.createElement('div');
+        questionItem.className = 'question-item';
+        
+        const questionText = document.createElement('p');
+        questionText.className = 'question-text';
+        const questionContent = original.querySelector('.question-text').textContent;
+        questionText.textContent = questionContent;
+        
+        // 存储问题文本作为自定义属性，便于事件处理时使用
+        questionItem.setAttribute('data-question', questionContent);
+        
+        questionItem.appendChild(questionText);
+        questionsList.appendChild(questionItem);
+        
+        // 添加点击事件 - 使用已保存的问题内容
+        questionItem.addEventListener('click', handleSuggestedQuestionClick);
+    });
+    
+    // 添加问题列表到容器
+    questionsContainer.appendChild(questionsList);
+    
+    // 将问题容器添加到消息的后面而不是内部
+    messageDiv.parentNode.insertBefore(questionsContainer, messageDiv.nextSibling);
+}
+
+// 处理建议问题点击的函数
+function handleSuggestedQuestionClick(event) {
+    // 检查是否存在正在输入的提示（通过查找typing-indicator元素）
+    // 而不是依赖isWaitingForResponse变量
+    const typingIndicator = document.getElementById('typing-indicator');
+    const inputField = document.querySelector('.question-input');
+    
+    // 如果存在typing-indicator或输入框被禁用，说明AI正在回复中
+    if (typingIndicator || (inputField && inputField.disabled)) {
+        console.log('正在等待回复，忽略点击');
+        return;
+    }
+    
+    const question = this.getAttribute('data-question');
+    console.log('建议问题被点击:', question);
+    
+    // 临时禁用所有建议问题按钮，防止重复点击
+    const allQuestionItems = document.querySelectorAll('.question-item');
+    allQuestionItems.forEach(item => {
+        item.style.pointerEvents = 'none';
+        item.style.opacity = '0.6';
+    });
+    
+    // 通过querySelector获取输入框和按钮
+    const submitButton = document.querySelector('.ask-button');
+    
+    if (inputField && submitButton) {
+        // 将问题文本填入输入框
+        inputField.value = question;
+        // 模拟点击发送按钮
+        submitButton.click();
+        
+        // 滚动到底部
+        setTimeout(() => {
+            const container = document.querySelector('.app-container');
+            if (container) {
+                container.scrollTo({
+                    top: container.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }
+        }, 100);
+    } else {
+        console.error('无法找到输入框或发送按钮');
+        // 恢复建议问题按钮状态
+        allQuestionItems.forEach(item => {
+            item.style.pointerEvents = '';
+            item.style.opacity = '';
+        });
+    }
+    
+    // 5秒后恢复建议问题按钮状态（无论成功与否）
+    setTimeout(() => {
+        const allQuestionItems = document.querySelectorAll('.question-item');
+        allQuestionItems.forEach(item => {
+            item.style.pointerEvents = '';
+            item.style.opacity = '';
+        });
+    }, 5000);
 } 
