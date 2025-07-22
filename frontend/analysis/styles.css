@@ -109,6 +109,7 @@ body {
         inset 1.06px 1.06px 4.79px 0px rgba(255, 255, 255, 0.4),
         inset 0.53px 0.53px 0.53px 0px rgba(255, 255, 255, 0.7);
     overflow: hidden;
+    z-index: 1;
 }
 
 .background-decoration::after {
@@ -273,15 +274,16 @@ body {
 
 /* 进度条区域 */
 .progress-section {
-    position: absolute;
-    top: 690px;
-    left: 50%;
-    transform: translateX(-50%); /* 居中显示 */
-    width: 171px;
+    position: relative;
+    top: 240px;
+    left: 0;
+    width: 80%;
+    max-width: 800px;
     height: 20px;
     display: flex;
     align-items: center;
     gap: 8px;
+    margin: 15px auto 0;
 }
 
 .progress-bar {
