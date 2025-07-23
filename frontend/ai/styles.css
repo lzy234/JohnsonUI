@@ -556,33 +556,19 @@ body {
 }
 
 /* 基本信息部分 */
-.info-grid {
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+.basic-info-text {
+    padding: 16px 20px;
 }
 
-.info-item {
-    background: rgba(255, 255, 255, 0.04);
-    border-radius: 8px;
-    padding: 8px 12px;
-    backdrop-filter: blur(12px);
+.basic-info-text p {
+    font-size: 15px;
+    line-height: 1.5;
+    color: rgba(0, 0, 0, 0.8);
+    margin-bottom: 8px;
 }
 
-.info-label {
-    display: block;
-    font-size: 13px;
-    color: rgba(0, 0, 0, 0.5);
-    margin-bottom: 4px;
-}
-
-.info-value {
-    display: block;
-    font-size: 18px;
-    color: #000;
-    font-weight: 400;
-    line-height: 1.33;
+.basic-info-text p:last-child {
+    margin-bottom: 0;
 }
 
 .basic-info-section {

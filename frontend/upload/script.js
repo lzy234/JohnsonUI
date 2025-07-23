@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     initializePage();
     loadPresetVideos(); // 加载预设视频列表
+    loadSurgicalProcedures(); // 加载手术术式选项
     initializeGenderSelection();
     initializeFormValidation();
     initializeSubmitButton();
@@ -186,6 +187,66 @@ function formatVideoDuration(seconds) {
     
     result += `${mins}:${secs < 10 ? '0' : ''}${secs}`;
     return result;
+}
+
+// 加载手术术式选项
+function loadSurgicalProcedures() {
+    const procedureSelect = document.querySelector('.input-wrapper select');
+    if (!procedureSelect) return;
+    
+    // 保留默认选项
+    const defaultOption = procedureSelect.querySelector('option[value=""]');
+    procedureSelect.innerHTML = '';
+    if (defaultOption) {
+        procedureSelect.appendChild(defaultOption);
+    }
+    
+    // 判断开发环境还是生产环境
+    const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const baseUrl = isDev ? '' : '';
+    
+    // 从JSON文件加载术式数据
+    fetch(`${baseUrl}/upload/procedures.json`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`加载术式数据失败: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data && data.procedures && data.procedures.length > 0) {
+                // 添加术式选项
+                data.procedures.forEach(procedure => {
+                    const option = document.createElement('option');
+                    option.value = procedure.value;
+                    option.textContent = procedure.label;
+                    procedureSelect.appendChild(option);
+                });
+            } else {
+                console.error('术式数据为空或格式不正确');
+            }
+        })
+        .catch(error => {
+            console.error('加载术式数据失败:', error);
+            // 加载失败时使用静态备份数据
+            const fallbackProcedures = [
+                {value: "左肝切除术", label: "左肝切除术"},
+                {value: "右肝切除术", label: "右肝切除术"},
+                {value: "肝段切除术", label: "肝段切除术"},
+                {value: "肝楔形切除术", label: "肝楔形切除术"},
+                {value: "肝移植术", label: "肝移植术"},
+                {value: "胆囊切除术", label: "胆囊切除术"},
+                {value: "胆管切除术", label: "胆管切除术"},
+                {value: "其他", label: "其他"}
+            ];
+            
+            fallbackProcedures.forEach(procedure => {
+                const option = document.createElement('option');
+                option.value = procedure.value;
+                option.textContent = procedure.label;
+                procedureSelect.appendChild(option);
+            });
+        });
 }
 
 // 初始化页面，显示选择的医生信息
@@ -370,16 +431,26 @@ function validateField(field) {
 // 验证所有表单
 function validateAllFields() {
     let isValid = true;
-    const requiredFields = document.querySelectorAll('input[type="text"]:not([readonly])');
+    
+    // 获取所有必填输入字段（使用更兼容的选择方式）
+    const allInputs = document.querySelectorAll('.input-wrapper input[type="text"]:not([readonly])');
+    const requiredInputs = [];
+    
+    // 筛选出带有必填标记的输入字段
+    allInputs.forEach(input => {
+        const wrapper = input.closest('.input-wrapper');
+        const label = wrapper.querySelector('label');
+        if (label && label.innerHTML.includes('*')) {
+            requiredInputs.push(input);
+        }
+    });
+    
     const surgerySelect = document.querySelector('.input-wrapper select');
     
     // 创建字段标签映射
     const fieldLabels = {
         0: '医生',
-        1: '医院',
-        2: '出血量',
-        3: 'BMI',
-        4: '年龄'
+        1: '医院'
     };
     
     // 验证是否选择了视频
@@ -389,9 +460,9 @@ function validateAllFields() {
         return false;
     }
     
-    // 验证每个文本输入字段
-    for (let i = 0; i < requiredFields.length; i++) {
-        if (!validateField(requiredFields[i])) {
+    // 验证每个必填文本输入字段
+    for (let i = 0; i < requiredInputs.length; i++) {
+        if (!validateField(requiredInputs[i])) {
             showMessage(`请填写${fieldLabels[i]}信息`, 'error');
             return false;
         }
@@ -403,12 +474,7 @@ function validateAllFields() {
         return false;
     }
     
-    // 验证是否选择了性别
-    const selectedGender = document.querySelector('.gender-option.selected');
-    if (!selectedGender) {
-        showMessage('请选择性别', 'error');
-        return false;
-    }
+    // 性别不再是必填项，无需验证
     
     return true;
 }

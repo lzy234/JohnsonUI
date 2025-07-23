@@ -405,6 +405,10 @@ body {
     color: #000000;
 }
 
+.input-wrapper select:valid:not([value=""]) {
+    color: #000000;
+}
+
 .dropdown-icon {
     position: absolute;
     right: 12px;

@@ -330,34 +330,57 @@ function updateAnalysisContent(doctorData) {
 
 // 更新基本信息
 function updateBasicInfo(videoData, patientData) {
-    const infoGrid = document.querySelector('.info-grid');
-    if (infoGrid) {
-        infoGrid.innerHTML = `
-            <div class="info-item">
-                <span class="info-label">视频</span>
-                <span class="info-value">${videoData.name}</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">术式</span>
-                <span class="info-value">${patientData.surgery}</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">医院</span>
-                <span class="info-value">${patientData.hospital}</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">医生</span>
-                <span class="info-value">${patientData.doctor}</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">患者年龄</span>
-                <span class="info-value">${patientData.age}岁</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">BMI</span>
-                <span class="info-value">${patientData.bmi}</span>
-            </div>
-        `;
+    const basicInfoText = document.querySelector('.basic-info-text');
+    if (basicInfoText) {
+        let content = '';
+        
+        // 如果有上传日期，显示日期
+        if (videoData && videoData.uploadTime) {
+            const uploadDate = videoData.uploadTime.split('上传于 ')[1] || videoData.uploadTime;
+            content += `<p>日期：${uploadDate}</p>`;
+        }
+        
+        // 显示术式
+        if (patientData && patientData.surgery) {
+            content += `<p>术式：${patientData.surgery}</p>`;
+        }
+        
+        // 显示医院
+        if (patientData && patientData.hospital) {
+            content += `<p>医院：${patientData.hospital}</p>`;
+        }
+        
+        // 显示医生
+        if (patientData && patientData.doctor) {
+            content += `<p>医生：${patientData.doctor}</p>`;
+        }
+        
+        // 显示患者年龄和性别
+        if (patientData) {
+            let patientInfo = '';
+            if (patientData.age) {
+                patientInfo += `${patientData.age}岁`;
+            }
+            if (patientData.gender) {
+                patientInfo += patientInfo ? `，${patientData.gender}` : patientData.gender;
+            }
+            if (patientInfo) {
+                content += `<p>患者：${patientInfo}</p>`;
+            }
+        }
+        
+        // 显示BMI
+        if (patientData && patientData.bmi) {
+            content += `<p>BMI：${patientData.bmi}</p>`;
+        }
+        
+        // 显示出血量
+        if (patientData && patientData.bleeding) {
+            content += `<p>出血量：${patientData.bleeding}ml</p>`;
+        }
+        
+        // 更新内容
+        basicInfoText.innerHTML = content || '<p>暂无手术信息</p>';
     }
 }
 
