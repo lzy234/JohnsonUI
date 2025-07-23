@@ -1143,37 +1143,3 @@ body {
     0%, 100% { opacity: 1; }
     50% { opacity: 0; }
 } 
-
-/* 消息中的建议问题样式 */
-.chat-messages .suggested-questions {
-    margin: 8px 0 20px 44px;
-    max-width: 350px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    width: calc(100% - 60px); /* 留出边距 */
-}
-
-.message .card-header {
-    padding: 12px 16px;
-}
-
-.message .questions-list {
-    padding: 8px 16px 16px;
-}
-
-/* 消息内的建议问题与原始卡片一致 */
-.chat-messages .suggested-questions .question-item {
-    background: rgba(255, 255, 255, 0.7);
-    border-radius: 12px;
-    padding: 12px 16px;
-    margin-bottom: 12px;
-    transition: all 0.2s ease;
-    cursor: pointer;
-}
-
-/* 建议问题响应式布局 */
-@media (max-width: 390px) {
-    .chat-messages .suggested-questions {
-        margin: 8px 0 20px 32px;
-        width: calc(100% - 40px);
-    }
-} 
