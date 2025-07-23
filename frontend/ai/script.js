@@ -1000,7 +1000,7 @@ function initializeVideoPlayer() {
                 videoElement.pause();
                 isPlaying = false;
                 // 切换回播放图标
-                playBtn.innerHTML = '<img src="images/play_arrow.svg" alt="播放" style="width: 20px; height: 20px; filter: invert(1);">';
+                playBtn.innerHTML = '<img src="/ai/images/play_arrow.svg" alt="播放" style="width: 20px; height: 20px; filter: invert(1);">';
                 // 移除playing类以显示控件
                 videoElement.parentElement.classList.remove('playing');
             }
@@ -1027,7 +1027,7 @@ function initializeVideoPlayer() {
         isPlaying = false;
         // 切换回播放图标
         if (playBtn) {
-            playBtn.innerHTML = '<img src="images/play_arrow.svg" alt="播放" style="width: 20px; height: 20px; filter: invert(1);">';
+            playBtn.innerHTML = '<img src="/ai/images/play_arrow.svg" alt="播放" style="width: 20px; height: 20px; filter: invert(1);">';
         }
         // 移除playing类以显示控件
         videoElement.parentElement.classList.remove('playing');
@@ -1043,18 +1043,31 @@ function initializeVideoPlayer() {
                     videoElement.play();
                     isPlaying = true;
                     // 切换到暂停图标
-                    playBtn.innerHTML = '<span style="color: white; font-size: 20px;">⏸</span>';
+                    if (playBtn) playBtn.innerHTML = '<span style="color: white; font-size: 20px;">⏸</span>';
                     // 添加playing类以隐藏控件
                     videoContent.classList.add('playing');
                 } else {
                     videoElement.pause();
                     isPlaying = false;
                     // 切换回播放图标
-                    playBtn.innerHTML = '<img src="images/play_arrow.svg" alt="播放" style="width: 20px; height: 20px; filter: invert(1);">';
+                    if (playBtn) playBtn.innerHTML = '<img src="/ai/images/play_arrow.svg" alt="播放" style="width: 20px; height: 20px; filter: invert(1);">';
                     // 移除playing类以显示控件
                     videoContent.classList.remove('playing');
                 }
             }
+        });
+        
+        // 添加视频事件监听器确保按钮状态与视频状态同步
+        videoElement.addEventListener('play', function() {
+            isPlaying = true;
+            if (playBtn) playBtn.innerHTML = '<span style="color: white; font-size: 20px;">⏸</span>';
+            videoContent.classList.add('playing');
+        });
+        
+        videoElement.addEventListener('pause', function() {
+            isPlaying = false;
+            if (playBtn) playBtn.innerHTML = '<img src="/ai/images/play_arrow.svg" alt="播放" style="width: 20px; height: 20px; filter: invert(1);">';
+            videoContent.classList.remove('playing');
         });
     }
     

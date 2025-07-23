@@ -1142,3 +1142,32 @@ body {
     0%, 100% { opacity: 1; }
     50% { opacity: 0; }
 } 
+
+/* 视频播放控件自动隐藏设置 */
+.video-content {
+    position: relative;
+}
+
+.video-content.playing .video-controls,
+.video-content.playing .progress-bar {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.video-content:hover .video-controls,
+.video-content:hover .progress-bar {
+    opacity: 1;
+}
+
+/* 确保在移动端点击视频区域时控件始终响应正确 */
+@media (max-width: 768px) {
+    .video-content.playing .video-controls,
+    .video-content.playing .progress-bar {
+        opacity: 0;
+    }
+    
+    .video-content:active .video-controls,
+    .video-content:active .progress-bar {
+        opacity: 1;
+    }
+} 
