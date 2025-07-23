@@ -133,6 +133,7 @@ class CozeService:
                 # 使用异步模式处理流式响应
                 content_accumulator = ""
                 event_count = 0
+                follow_up_questions = []  # 收集建议问题
                 
                 # 初始化事件发送计时器和超时检测
                 last_event_time = asyncio.get_event_loop().time()
@@ -155,6 +156,7 @@ class CozeService:
                     content = None
                     is_complete = False
                     usage_info = None
+                    follow_up_content = None
                     
                     # 根据事件类型处理
                     if hasattr(event, 'event'):
@@ -172,6 +174,27 @@ class CozeService:
                             elif hasattr(event, 'content'):
                                 content = event.content
                                 
+                        elif event_type == ChatEventType.CONVERSATION_MESSAGE_COMPLETED:
+                            # 消息完成事件 - 检查是否为follow_up类型
+                            if hasattr(event, 'message') and hasattr(event.message, 'type'):
+                                msg_type = getattr(event.message, 'type', None)
+                                if msg_type == 'follow_up' and hasattr(event.message, 'content'):
+                                    follow_up_content = event.message.content
+                                    follow_up_questions.append(follow_up_content)
+                                    logger.debug(f"[{request_id}] 收集到建议问题: {follow_up_content}")
+                            elif hasattr(event, 'data') and hasattr(event.data, 'type'):
+                                msg_type = getattr(event.data, 'type', None)
+                                if msg_type == 'follow_up' and hasattr(event.data, 'content'):
+                                    follow_up_content = event.data.content
+                                    follow_up_questions.append(follow_up_content)
+                                    logger.debug(f"[{request_id}] 收集到建议问题: {follow_up_content}")
+                            # 检查原始事件数据中的type字段
+                            elif hasattr(event, 'type') and event.type == 'follow_up':
+                                if hasattr(event, 'content'):
+                                    follow_up_content = event.content
+                                    follow_up_questions.append(follow_up_content)
+                                    logger.debug(f"[{request_id}] 收集到建议问题: {follow_up_content}")
+                                    
                         elif event_type == ChatEventType.CONVERSATION_CHAT_COMPLETED:
                             # 对话完成事件 - 提取使用统计
                             is_complete = True
@@ -242,11 +265,12 @@ class CozeService:
                             )
                             content_accumulator = ""
                         
-                        # 发送完成事件
+                        # 发送完成事件，包含建议问题
                         yield StreamEvent(
                             type=StreamEventType.COMPLETE,
                             done=True,
-                            usage=usage_info
+                            usage=usage_info,
+                            follow_up_questions=follow_up_questions if follow_up_questions else None
                         )
                         elapsed = current_time - start_time
                         stream_logger.log_summary("完成")
@@ -264,10 +288,11 @@ class CozeService:
                         done=False
                     )
                     
-                    # 发送完成事件（如果之前没有明确完成）
+                    # 发送完成事件（如果之前没有明确完成），包含建议问题
                     yield StreamEvent(
                         type=StreamEventType.COMPLETE,
-                        done=True
+                        done=True,
+                        follow_up_questions=follow_up_questions if follow_up_questions else None
                     )
                     elapsed = asyncio.get_event_loop().time() - start_time
                     stream_logger.log_summary("完成(隐式)")
@@ -444,4 +469,4 @@ class CozeService:
 
 
 # 全局服务实例
-coze_service = CozeService() 
+coze_service = CozeService()

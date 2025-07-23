@@ -682,7 +682,7 @@ async function sendMessage(message) {
 
 // 流式聊天API调用
 async function streamChatWithAPI(message) {
-    const API_BASE_URL = 'http://120.55.79.77:8000';
+    const API_BASE_URL = 'http://localhost:8000';
     
     // 从会话数据中获取医生类型
     const doctorData = window.router ? window.router.getPageData('doctor') : null;
@@ -809,6 +809,22 @@ async function streamChatWithAPI(message) {
                                 updateInputState();
                                 // 在错误消息后显示建议问题
                                 moveSuggestedQuestionsAfterLastMessage();
+                            } else if (data.type === 'follow_up') {
+                                console.log('收到建议问题:', data.follow_up_questions);
+                                
+                                // 处理从Coze API返回的建议问题
+                                if (data.follow_up_questions && Array.isArray(data.follow_up_questions) && data.follow_up_questions.length > 0) {
+                                    // 只取前3个问题，将建议问题转换为前端需要的格式
+                                    const limitedQuestions = data.follow_up_questions.slice(0, 3);
+                                    const formattedQuestions = limitedQuestions.map((question, index) => ({
+                                        id: Date.now() + index,
+                                        text: question
+                                    }));
+                                    
+                                    // 显示建议问题
+                                    displaySuggestedQuestions(formattedQuestions);
+                                    moveSuggestedQuestionsAfterLastMessage();
+                                }
                             } else if (data.type === 'complete' || data.done) {
                                 console.log('流式响应完成');
                                 
@@ -823,6 +839,22 @@ async function streamChatWithAPI(message) {
                                 
                                 isWaitingForResponse = false;
                                 updateInputState();
+                                
+                                // 检查是否有建议问题需要显示
+                                if (data.follow_up_questions && Array.isArray(data.follow_up_questions) && data.follow_up_questions.length > 0) {
+                                    // 只取前3个问题，将建议问题转换为前端需要的格式
+                                    const limitedQuestions = data.follow_up_questions.slice(0, 3);
+                                    const formattedQuestions = limitedQuestions.map((question, index) => ({
+                                        id: Date.now() + index,
+                                        text: question
+                                    }));
+                                    
+                                    // 显示建议问题
+                                    displaySuggestedQuestions(formattedQuestions);
+                                } else {
+                                    // 如果没有从API返回建议问题，显示默认的建议问题
+                                    loadSuggestedQuestions();
+                                }
                                 
                                 // 在AI回复完成后，在对话气泡下方显示建议问题
                                 moveSuggestedQuestionsAfterLastMessage();
@@ -1231,8 +1263,22 @@ function loadSuggestedQuestions() {
             return response.json();
         })
         .then(data => {
-            if (data && data.suggestedQuestions && Array.isArray(data.suggestedQuestions)) {
-                displaySuggestedQuestions(data.suggestedQuestions);
+            // 获取当前专家类型
+            const doctorType = window.router && window.router.doctor_type ? window.router.doctor_type : 'default';
+            
+            // 根据专家类型选择对应的问题
+            let questionsData;
+            if (data[doctorType] && data[doctorType].suggestedQuestions) {
+                questionsData = data[doctorType].suggestedQuestions;
+            } else if (data.default && data.default.suggestedQuestions) {
+                questionsData = data.default.suggestedQuestions;
+            } else if (data.suggestedQuestions) {
+                // 兼容旧格式
+                questionsData = data.suggestedQuestions;
+            }
+            
+            if (questionsData && Array.isArray(questionsData)) {
+                displaySuggestedQuestions(questionsData);
             } else {
                 console.error('建议问题数据格式不正确');
             }
@@ -1249,7 +1295,10 @@ function displaySuggestedQuestions(questions) {
     
     questionsContainer.innerHTML = '';
     
-    questions.forEach(question => {
+    // 如果问题较多，只显示前3个
+    const displayQuestions = questions.slice(0, 3);
+    
+    displayQuestions.forEach(question => {
         const questionItem = document.createElement('div');
         questionItem.className = 'question-item';
         

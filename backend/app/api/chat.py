@@ -62,6 +62,8 @@ async def stream_chat(request: ChatRequest, req: Request = None):
     
     async def generate_stream():
         """生成流式响应"""
+        
+        # TODO: 发送建议问题到前端
         try:
             logger.info(f"[{request_id}] 开始生成流式响应")
             
@@ -95,6 +97,9 @@ async def stream_chat(request: ChatRequest, req: Request = None):
                 if event.type == "message":
                     stream_logger.log_event("message", content=event_data.get("content", ""))
                     logger.debug(f"[{request_id}] 发送流式消息事件 #{event_count}, 间隔: {time_since_last:.3f}秒")
+                elif event.type == "follow_up":
+                    stream_logger.log_event("follow_up", metadata=event_data)
+                    logger.info(f"[{request_id}] 发送建议问题事件 #{event_count}, 问题数量: {len(event.follow_up_questions) if event.follow_up_questions else 0}")
                 else:
                     stream_logger.log_event(event.type, metadata=event_data)
                     logger.info(f"[{request_id}] 发送流式{event.type}事件 #{event_count}")
@@ -133,6 +138,7 @@ async def stream_chat(request: ChatRequest, req: Request = None):
                 "request_id": request_id
             }
             yield f"data: {json.dumps(error_event, ensure_ascii=False)}\n\n"
+    
     
     # 返回流式响应，设置合适的响应头
     return StreamingResponse(
