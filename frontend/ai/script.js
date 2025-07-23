@@ -24,6 +24,8 @@ function initializePage() {
 // 全局变量
 let isWaitingForResponse = false;
 let chatMessages;
+// 添加变量以跟踪最后一条AI消息的引用
+let lastAiMessage = null;
 
 // 创建消息元素
 function createMessage(content, isUser = false) {
@@ -159,6 +161,31 @@ function updateInputState() {
             askButton.style.opacity = '1';
             questionInput.placeholder = '输入您的问题...';
         }
+    }
+}
+
+// 显示或隐藏建议问题部分
+function toggleSuggestedQuestions(show = true) {
+    const suggestedQuestionsCard = document.querySelector('.suggested-questions');
+    if (suggestedQuestionsCard) {
+        if (show) {
+            suggestedQuestionsCard.style.display = 'block';
+        } else {
+            suggestedQuestionsCard.style.display = 'none';
+        }
+    }
+}
+
+// 将建议问题移动到最新AI消息下方
+function moveSuggestedQuestionsAfterLastMessage() {
+    const suggestedQuestionsCard = document.querySelector('.suggested-questions');
+    if (suggestedQuestionsCard && lastAiMessage) {
+        // 从原位置移除
+        suggestedQuestionsCard.remove();
+        // 插入到最后一条AI消息后面
+        lastAiMessage.after(suggestedQuestionsCard);
+        // 确保显示
+        suggestedQuestionsCard.style.display = 'block';
     }
 }
 
@@ -421,6 +448,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const askButton = document.querySelector('.ask-button');
     const questionInput = document.querySelector('.question-input');
     
+    // 确保建议问题最初显示在主内容区域，且可见
+    const suggestedQuestions = document.querySelector('.suggested-questions');
+    if (suggestedQuestions) {
+        suggestedQuestions.style.display = 'block';
+    }
+    
     // 提问按钮功能
     if (askButton && questionInput) {
         askButton.addEventListener('click', function() {
@@ -592,6 +625,9 @@ async function sendMessage(message) {
     isWaitingForResponse = true;
     updateInputState(); // 立即更新输入状态
     
+    // 在接收AI消息期间隐藏建议问题部分
+    toggleSuggestedQuestions(false);
+    
     // 添加用户消息
     const userMessage = createMessage(message, true);
     chatMessages.appendChild(userMessage);
@@ -610,6 +646,10 @@ async function sendMessage(message) {
         // 显示错误消息
         const errorMessage = createMessage('抱歉，AI助手暂时无法回应。请稍后再试。', false);
         chatMessages.appendChild(errorMessage);
+        lastAiMessage = errorMessage;
+        
+        // 在错误消息后显示建议问题
+        moveSuggestedQuestionsAfterLastMessage();
     } finally {
         isWaitingForResponse = false;
         updateInputState(); // 重新启用输入框
@@ -694,6 +734,8 @@ async function streamChatWithAPI(message) {
     aiMessageDiv.appendChild(messageContent);
     
     chatMessages.appendChild(aiMessageDiv);
+    // 更新最后一条AI消息引用
+    lastAiMessage = aiMessageDiv;
     
     try {
         let buffer = ''; // 用于处理不完整的JSON
@@ -742,6 +784,8 @@ async function streamChatWithAPI(message) {
                                 messageText.innerHTML = `<span style="color: #ff6b6b;">AI回复出现错误: ${data.error}</span>`;
                                 isWaitingForResponse = false;
                                 updateInputState();
+                                // 在错误消息后显示建议问题
+                                moveSuggestedQuestionsAfterLastMessage();
                             } else if (data.type === 'complete' || data.done) {
                                 console.log('流式响应完成');
                                 
@@ -756,6 +800,10 @@ async function streamChatWithAPI(message) {
                                 
                                 isWaitingForResponse = false;
                                 updateInputState();
+                                
+                                // 在AI回复完成后，在对话气泡下方显示建议问题
+                                moveSuggestedQuestionsAfterLastMessage();
+                                
                                 scrollToBottom();
                             }
                         }
@@ -778,12 +826,17 @@ async function streamChatWithAPI(message) {
         // 移除打字动画效果
         messageText.classList.remove('typing-animation');
         
+        // 确保建议问题显示在最后一条消息下方
+        moveSuggestedQuestionsAfterLastMessage();
+        
     } catch (error) {
         console.error('读取流式响应失败:', error);
         messageText.classList.remove('typing-animation');
         messageText.innerHTML = '连接中断，请重试。';
         isWaitingForResponse = false;
         updateInputState();
+        // 在错误消息后显示建议问题
+        moveSuggestedQuestionsAfterLastMessage();
     }
 }
 

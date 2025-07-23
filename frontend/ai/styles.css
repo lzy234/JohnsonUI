@@ -1129,6 +1129,19 @@ body {
     font-weight: 400;
 } 
 
+/* 在消息后显示的建议问题样式 */
+.message.ai + .suggested-questions {
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+/* 建议问题卡片样式调整，确保能完整显示在聊天流中 */
+.chat-messages .suggested-questions.card {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+}
+
 /* 打字动画效果 */
 .typing-animation::after {
     content: '|';
