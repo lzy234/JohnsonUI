@@ -1097,8 +1097,6 @@ body {
 /* 建议问题模块 */
 .suggested-questions {
     margin-bottom: 20px;
-    max-width: 100%;
-    width: 100%;
 }
 
 .questions-list {

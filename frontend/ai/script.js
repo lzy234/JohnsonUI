@@ -15,12 +15,6 @@ function initializePage() {
         
         // 显示综合信息
         displaySessionInfo();
-        
-        // 加载建议问题
-        loadSuggestedQuestions();
-
-        // 在页面加载时检查是否已经有对话，如果没有，显示建议问题
-        updateSuggestedQuestionsVisibility(document.querySelector('.chat-messages').childElementCount === 0);
     }
 }
 
@@ -46,110 +40,6 @@ function displaySessionInfo() {
     }
     
     console.log('会话数据已加载:', { doctorData, videoData, patientData, analysisData });
-}
-
-// 加载建议问题
-async function loadSuggestedQuestions() {
-    try {
-        const doctorData = window.router.getPageData('doctor');
-        const doctorType = doctorData?.id; // 获取医生ID作为类型标识
-        
-        console.log('获取医生类型的建议问题:', doctorType || '默认');
-        
-        // 判断开发环境还是生产环境
-        const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        const baseUrl = isDev ? 'http://localhost:8000' : '';
-        
-        // 构建API URL
-        const apiUrl = `${baseUrl}/api/videos/suggested-questions${doctorType ? `?doctor_type=${doctorType}` : ''}`;
-        
-        // 调用API获取建议问题
-        const response = await fetch(apiUrl);
-        
-        if (!response.ok) {
-            throw new Error(`API响应错误: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('获取到的建议问题:', data);
-        
-        if (data.questions && Array.isArray(data.questions)) {
-            updateSuggestedQuestions(data.questions);
-        }
-    } catch (error) {
-        console.error('加载建议问题失败:', error);
-        // 失败时使用默认问题
-    }
-}
-
-// 更新建议问题UI
-function updateSuggestedQuestions(questions) {
-    const questionsList = document.querySelector('.questions-list');
-    if (!questionsList) return;
-    
-    // 清空现有问题
-    questionsList.innerHTML = '';
-    
-    // 添加新问题
-    questions.forEach(question => {
-        const questionItem = document.createElement('div');
-        questionItem.className = 'question-item';
-        
-        const questionText = document.createElement('p');
-        questionText.className = 'question-text';
-        questionText.textContent = question;
-        
-        questionItem.appendChild(questionText);
-        questionsList.appendChild(questionItem);
-        
-        // 添加点击事件
-        questionItem.addEventListener('click', function() {
-            const text = this.querySelector('.question-text').textContent;
-            if (text && !isWaitingForResponse) {
-                sendMessage(text);
-            }
-        });
-    });
-}
-
-// 更新建议问题可见性
-function updateSuggestedQuestionsVisibility(shouldShow) {
-    const suggestedQuestionsCard = document.querySelector('.suggested-questions');
-    if (!suggestedQuestionsCard) return;
-    
-    if (shouldShow) {
-        // 显示建议问题，并且将其移动到对话消息之后
-        const chatMessages = document.querySelector('.chat-messages-container');
-        if (chatMessages && chatMessages.parentElement) {
-            suggestedQuestionsCard.style.display = 'block';
-            
-            // 创建一个包装容器来保持原有宽度样式
-            let suggestedQuestionsWrapper = document.querySelector('.suggested-questions-wrapper');
-            if (!suggestedQuestionsWrapper) {
-                suggestedQuestionsWrapper = document.createElement('div');
-                suggestedQuestionsWrapper.className = 'suggested-questions-wrapper';
-                suggestedQuestionsWrapper.style.maxWidth = '350px';
-                suggestedQuestionsWrapper.style.margin = '0 auto';
-                suggestedQuestionsWrapper.style.padding = '0 20px';
-            }
-            
-            // 将建议问题放入包装容器，然后将包装容器放到聊天消息区域之后
-            if (suggestedQuestionsCard.parentElement !== suggestedQuestionsWrapper) {
-                suggestedQuestionsWrapper.appendChild(suggestedQuestionsCard);
-            }
-            
-            // 如果包装容器不在DOM中，则添加到聊天消息容器之后
-            if (!suggestedQuestionsWrapper.parentElement) {
-                chatMessages.parentElement.insertBefore(suggestedQuestionsWrapper, chatMessages.nextSibling);
-            }
-        } else {
-            // 如果找不到聊天消息容器，保持原位置但显示
-            suggestedQuestionsCard.style.display = 'block';
-        }
-    } else {
-        // 隐藏建议问题
-        suggestedQuestionsCard.style.display = 'none';
-    }
 }
 
 // 更新医生头像
@@ -297,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 playBtn.innerHTML = '<span style="color: white; font-size: 20px;">⏸</span>';
             } else {
                 // 切换回播放图标
-                playBtn.innerHTML = '<img src="/ai/images/play_arrow.svg" alt="播放" style="width: 20px; height: 20px; filter: invert(1);">';
+                playBtn.innerHTML = '<img src="images/play_arrow.svg" alt="播放" style="width: 20px; height: 20px; filter: invert(1);">';
             }
         });
     }
@@ -415,14 +305,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const doctorData = window.router.getPageData('doctor');
         
         if (isUser) {
-            avatarImg.src = '/ai/images/user_avatar.png';
+            avatarImg.src = 'images/user_avatar.png';
             avatarImg.alt = '用户';
         } else {
             // 根据医生类型选择头像
             if (doctorData && (doctorData.id === 'wang' || doctorData.name.includes('王'))) {
-                avatarImg.src = '/ai/images/doctor1.png';
+                avatarImg.src = 'images/doctor1.png';
             } else {
-                avatarImg.src = '/ai/images/doctor3.png';
+                avatarImg.src = 'images/doctor3.png';
             }
             avatarImg.alt = 'AI助手';
         }
@@ -471,9 +361,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 根据医生类型选择头像
         if (doctorData && (doctorData.id === 'wang' || doctorData.name.includes('王'))) {
-            avatarImg.src = '/ai/images/doctor1.png';
+            avatarImg.src = 'images/doctor1.png';
         } else {
-            avatarImg.src = '/ai/images/doctor3.png';
+            avatarImg.src = 'images/doctor3.png';
         }
         
         avatarImg.alt = 'AI助手';
@@ -591,9 +481,6 @@ document.addEventListener('DOMContentLoaded', function() {
         isWaitingForResponse = true;
         updateInputState(); // 立即更新输入状态
         
-        // 隐藏建议问题
-        updateSuggestedQuestionsVisibility(false);
-        
         // 添加用户消息
         const userMessage = createMessage(message, true);
         chatMessages.appendChild(userMessage);
@@ -615,10 +502,6 @@ document.addEventListener('DOMContentLoaded', function() {
         } finally {
             isWaitingForResponse = false;
             updateInputState(); // 重新启用输入框
-            
-            // 对话结束后重新显示建议问题
-            updateSuggestedQuestionsVisibility(true);
-            
             scrollToBottom();
         }
     }
@@ -668,9 +551,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 根据医生类型选择头像
         if (doctorData && (doctorData.id === 'wang' || doctorData.name.includes('王'))) {
-            avatarImg.src = '/ai/images/doctor1.png';
+            avatarImg.src = 'images/doctor1.png';
         } else {
-            avatarImg.src = '/ai/images/doctor3.png';
+            avatarImg.src = 'images/doctor3.png';
         }
         
         avatarImg.alt = 'AI助手';
@@ -748,7 +631,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                     messageText.innerHTML = `<span style="color: #ff6b6b;">AI回复出现错误: ${data.error}</span>`;
                                     isWaitingForResponse = false;
                                     updateInputState();
-                                    updateSuggestedQuestionsVisibility(true); // 在错误时显示建议问题
                                 } else if (data.type === 'complete' || data.done) {
                                     console.log('流式响应完成');
                                     
@@ -791,7 +673,6 @@ document.addEventListener('DOMContentLoaded', function() {
             messageText.innerHTML = '连接中断，请重试。';
             isWaitingForResponse = false;
             updateInputState();
-            updateSuggestedQuestionsVisibility(true); // 在错误时显示建议问题
         }
     }
 
@@ -1048,7 +929,7 @@ function initializeVideoPlayer() {
                 videoElement.pause();
                 isPlaying = false;
                 // 切换回播放图标
-                playBtn.innerHTML = '<img src="/ai/images/play_arrow.svg" alt="播放" style="width: 20px; height: 20px; filter: invert(1);">';
+                playBtn.innerHTML = '<img src="images/play_arrow.svg" alt="播放" style="width: 20px; height: 20px; filter: invert(1);">';
                 // 移除playing类以显示控件
                 videoElement.parentElement.classList.remove('playing');
             }
@@ -1075,7 +956,7 @@ function initializeVideoPlayer() {
         isPlaying = false;
         // 切换回播放图标
         if (playBtn) {
-            playBtn.innerHTML = '<img src="/ai/images/play_arrow.svg" alt="播放" style="width: 20px; height: 20px; filter: invert(1);">';
+            playBtn.innerHTML = '<img src="images/play_arrow.svg" alt="播放" style="width: 20px; height: 20px; filter: invert(1);">';
         }
         // 移除playing类以显示控件
         videoElement.parentElement.classList.remove('playing');
@@ -1098,7 +979,7 @@ function initializeVideoPlayer() {
                     videoElement.pause();
                     isPlaying = false;
                     // 切换回播放图标
-                    playBtn.innerHTML = '<img src="/ai/images/play_arrow.svg" alt="播放" style="width: 20px; height: 20px; filter: invert(1);">';
+                    playBtn.innerHTML = '<img src="images/play_arrow.svg" alt="播放" style="width: 20px; height: 20px; filter: invert(1);">';
                     // 移除playing类以显示控件
                     videoContent.classList.remove('playing');
                 }
