@@ -1140,41 +1140,15 @@ async function loadPresetVideo(videoId, videoElement, timeDisplay) {
         console.log(`加载预设视频: ${videoId}`);
         showMessage(`加载预设视频中，请稍候...`, 'info');
         
-        // 判断开发环境还是生产环境
-        const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        const baseUrl = isDev ? 'http://localhost:8000' : '';
+        // 预设的视频列表
+        const fallbackVideos = {
+            'video_001': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+            'video_002': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+            'video_003': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
+        };
         
-        // 获取视频数据
-        const response = await fetch(`${baseUrl}/api/videos/${videoId}`);
-        
-        if (!response.ok) {
-            throw new Error(`视频API响应错误: ${response.status}`);
-        }
-        
-        const videoData = await response.json();
-        console.log('获取到视频数据:', videoData);
-        
-        // 设置视频源（优先使用远程URL，如果不可用则使用本地路径）
-        // 在实际环境中，你可能需要补充完整的视频URL路径
-        if (videoData.url) {
-            videoElement.src = videoData.url;
-        } else if (videoData.local_path) {
-            // 根据环境处理本地视频路径
-            if (isDev) {
-                videoElement.src = `${baseUrl}/${videoData.local_path}`;
-            } else {
-                videoElement.src = videoData.local_path;
-            }
-        } else {
-            // 没有可用的视频源，使用预设的视频
-            const fallbackVideos = {
-                'video_001': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-                'video_002': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-                'video_003': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
-            };
-            
-            videoElement.src = fallbackVideos[videoId] || fallbackVideos['video_001'];
-        }
+        // 直接使用预设视频，不再尝试从API获取视频URL
+        videoElement.src = fallbackVideos[videoId] || fallbackVideos['video_001'];
         
         // 视频元数据加载完成后更新时间显示
         videoElement.onloadedmetadata = function() {
@@ -1190,7 +1164,7 @@ async function loadPresetVideo(videoId, videoElement, timeDisplay) {
             showMessage('视频加载失败，请检查网络连接', 'error');
             
             // 加载备用视频
-            videoElement.src = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+            videoElement.src = fallbackVideos['video_001'];
         };
         
     } catch (error) {

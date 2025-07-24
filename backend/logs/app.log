@@ -1,0 +1,11 @@
+2025-07-24 10:43:55.806 | INFO     | - | app.utils.logger:setup_logger:81 - 日志记录器已设置，级别: DEBUG, 主日志: D:\Project\JohnsonUI\backend\logs\app.log, 流日志: D:\Project\JohnsonUI\backend\logs\app_stream.log
+2025-07-24 10:43:55.807 | INFO     | - | app.services.config_service:load_config:52 - 配置文件加载成功: D:\Project\JohnsonUI\backend\config\coze_config.json
+2025-07-24 10:43:55.812 | INFO     | - | app.utils.logger:setup_logger:81 - 日志记录器已设置，级别: DEBUG, 主日志: D:\Project\JohnsonUI\backend\logs\app.log, 流日志: D:\Project\JohnsonUI\backend\logs\app_stream.log
+2025-07-24 10:43:55.812 | INFO     | - | app.main:lifespan:81 - ==================================================
+2025-07-24 10:43:55.813 | INFO     | - | app.main:lifespan:82 - 应用启动中...
+2025-07-24 10:43:55.813 | INFO     | - | app.main:lifespan:83 - 日志级别: DEBUG, 日志文件: D:\Project\JohnsonUI\backend\logs\app.log
+2025-07-24 10:43:55.814 | INFO     | - | app.main:lifespan:84 - 服务器配置: 0.0.0.0:8000
+2025-07-24 10:43:55.814 | INFO     | - | app.main:lifespan:85 - 机器人ID: 7519906707460898851
+2025-07-24 10:43:55.814 | INFO     | - | app.main:lifespan:86 - 调试模式: 启用
+2025-07-24 10:43:55.815 | INFO     | - | app.main:lifespan:87 - 应用启动完成
+2025-07-24 10:43:55.815 | INFO     | - | app.main:lifespan:88 - ==================================================

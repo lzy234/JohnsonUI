@@ -911,7 +911,10 @@ async function loadPresetVideo(videoId, videoElement, timeDisplay) {
         
         // 判断开发环境还是生产环境
         const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        const baseUrl = isDev ? 'http://localhost:8000' : '';
+        // 修改这里：在生产环境也添加端口8000
+        const baseUrl = isDev ? 'http://localhost:8000' : `http://${window.location.hostname}:8000`;
+        
+        console.log('使用API基础URL:', baseUrl);
         
         // 获取视频数据
         const response = await fetch(`${baseUrl}/api/videos/${videoId}`);
@@ -929,11 +932,7 @@ async function loadPresetVideo(videoId, videoElement, timeDisplay) {
             videoElement.src = videoData.url;
         } else if (videoData.local_path) {
             // 根据环境处理本地视频路径
-            if (isDev) {
-                videoElement.src = `${baseUrl}/${videoData.local_path}`;
-            } else {
-                videoElement.src = videoData.local_path;
-            }
+            videoElement.src = `${baseUrl}/${videoData.local_path}`;
         } else {
             // 没有可用的视频源，使用预设的视频
             const fallbackVideos = {

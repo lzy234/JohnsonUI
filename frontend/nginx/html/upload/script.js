@@ -50,7 +50,9 @@ async function fetchPresetVideos() {
     try {
         // 判断开发环境还是生产环境
         const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        const baseUrl = isDev ? 'http://localhost:8000' : '';
+        const baseUrl = isDev ? 'http://localhost:8000' : `http://${window.location.hostname}:8000`;
+        
+        console.log('使用API基础URL:', baseUrl);
         
         const response = await fetch(`${baseUrl}/api/videos/preset`);
         
