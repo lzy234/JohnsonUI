@@ -677,3 +677,45 @@ body {
         padding-left: 20px;
     }
 } 
+
+/* 级联选择样式 */
+.form-group + .form-group {
+    margin-top: 16px;
+}
+
+.department-procedure-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+#department-select:focus + .dropdown-icon,
+#procedure-select:focus + .dropdown-icon {
+    transform: translateY(-50%) rotate(180deg);
+}
+
+#procedure-select:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* 禁用状态下的下拉图标 */
+#procedure-select:disabled + .dropdown-icon {
+    opacity: 0.5;
+}
+
+/* 加强错误状态样式 */
+.input-wrapper.error select {
+    border-color: #E64545;
+}
+
+.input-wrapper.error .dropdown-icon {
+    filter: brightness(1.5) sepia(1) hue-rotate(-50deg) saturate(5);
+}
+
+/* 输入验证过渡效果 */
+.input-wrapper select,
+.input-wrapper .dropdown-icon {
+    transition: all 0.2s ease;
+} 

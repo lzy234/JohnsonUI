@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     initializePage();
     loadPresetVideos(); // 加载预设视频列表
-    loadSurgicalProcedures(); // 加载手术术式选项
+    loadDepartmentsAndProcedures(); // 加载科室和术式选项
     initializeGenderSelection();
     initializeFormValidation();
     initializeSubmitButton();
@@ -191,64 +191,175 @@ function formatVideoDuration(seconds) {
     return result;
 }
 
-// 加载手术术式选项
-function loadSurgicalProcedures() {
-    const procedureSelect = document.querySelector('.input-wrapper select');
-    if (!procedureSelect) return;
+// 加载科室和术式选项
+function loadDepartmentsAndProcedures() {
+    const departmentSelect = document.getElementById('department-select');
+    const procedureSelect = document.getElementById('procedure-select');
+    
+    if (!departmentSelect || !procedureSelect) return;
     
     // 保留默认选项
-    const defaultOption = procedureSelect.querySelector('option[value=""]');
+    const defaultDeptOption = departmentSelect.querySelector('option[value=""]');
+    departmentSelect.innerHTML = '';
+    if (defaultDeptOption) {
+        departmentSelect.appendChild(defaultDeptOption);
+    }
+    
+    // 保留默认选项
+    const defaultProcOption = procedureSelect.querySelector('option[value=""]');
     procedureSelect.innerHTML = '';
-    if (defaultOption) {
-        procedureSelect.appendChild(defaultOption);
+    if (defaultProcOption) {
+        procedureSelect.appendChild(defaultProcOption);
     }
     
     // 判断开发环境还是生产环境
     const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     const baseUrl = isDev ? '' : '';
     
-    // 从JSON文件加载术式数据
+    // 从JSON文件加载科室和术式数据
     fetch(`${baseUrl}/upload/procedures.json`)
         .then(response => {
             if (!response.ok) {
-                throw new Error(`加载术式数据失败: ${response.status}`);
+                throw new Error(`加载科室和术式数据失败: ${response.status}`);
             }
             return response.json();
         })
         .then(data => {
-            if (data && data.procedures && data.procedures.length > 0) {
-                // 添加术式选项
-                data.procedures.forEach(procedure => {
+            if (data && data.departments && data.departments.length > 0) {
+                // 存储完整数据用于级联选择
+                window.proceduresData = data;
+                
+                // 添加科室选项
+                data.departments.forEach(dept => {
                     const option = document.createElement('option');
-                    option.value = procedure.value;
-                    option.textContent = procedure.label;
-                    procedureSelect.appendChild(option);
+                    option.value = dept.value;
+                    option.textContent = dept.label;
+                    departmentSelect.appendChild(option);
+                });
+                
+                // 添加"其他"选项
+                if (data.other) {
+                    const otherOption = document.createElement('option');
+                    otherOption.value = data.other.value;
+                    otherOption.textContent = data.other.label;
+                    departmentSelect.appendChild(otherOption);
+                }
+                
+                // 添加科室变更事件监听器
+                departmentSelect.addEventListener('change', function() {
+                    updateProcedureOptions(this.value);
                 });
             } else {
-                console.error('术式数据为空或格式不正确');
+                console.error('科室和术式数据为空或格式不正确');
             }
         })
         .catch(error => {
-            console.error('加载术式数据失败:', error);
+            console.error('加载科室和术式数据失败:', error);
             // 加载失败时使用静态备份数据
-            const fallbackProcedures = [
-                {value: "左肝切除术", label: "左肝切除术"},
-                {value: "右肝切除术", label: "右肝切除术"},
-                {value: "肝段切除术", label: "肝段切除术"},
-                {value: "肝楔形切除术", label: "肝楔形切除术"},
-                {value: "肝移植术", label: "肝移植术"},
-                {value: "胆囊切除术", label: "胆囊切除术"},
-                {value: "胆管切除术", label: "胆管切除术"},
-                {value: "其他", label: "其他"}
-            ];
+            const fallbackData = {
+                departments: [
+                    {
+                        value: "general_surgery",
+                        label: "普外科",
+                        procedures: [
+                            {value: "结直肠癌根治术", label: "结直肠癌根治术"},
+                            {value: "结肠造口术", label: "结肠造口术"},
+                            {value: "直肠低位前切除术", label: "直肠低位前切除术"}
+                        ]
+                    },
+                    {
+                        value: "thoracic_surgery",
+                        label: "胸外科",
+                        procedures: [
+                            {value: "左肺叶切除术", label: "左肺叶切除术"},
+                            {value: "右肺叶切除术", label: "右肺叶切除术"},
+                            {value: "肺楔形切除术", label: "肺楔形切除术"}
+                        ]
+                    }
+                ],
+                other: {value: "other", label: "其他"}
+            };
             
-            fallbackProcedures.forEach(procedure => {
+            // 存储备用数据
+            window.proceduresData = fallbackData;
+            
+            // 添加科室选项
+            fallbackData.departments.forEach(dept => {
                 const option = document.createElement('option');
-                option.value = procedure.value;
-                option.textContent = procedure.label;
-                procedureSelect.appendChild(option);
+                option.value = dept.value;
+                option.textContent = dept.label;
+                departmentSelect.appendChild(option);
+            });
+            
+            // 添加"其他"选项
+            if (fallbackData.other) {
+                const otherOption = document.createElement('option');
+                otherOption.value = fallbackData.other.value;
+                otherOption.textContent = fallbackData.other.label;
+                departmentSelect.appendChild(otherOption);
+            }
+            
+            // 添加科室变更事件监听器
+            departmentSelect.addEventListener('change', function() {
+                updateProcedureOptions(this.value);
             });
         });
+}
+
+// 更新术式选项
+function updateProcedureOptions(departmentValue) {
+    const procedureSelect = document.getElementById('procedure-select');
+    if (!procedureSelect) return;
+    
+    // 清空现有选项，只保留默认提示选项
+    procedureSelect.innerHTML = '';
+    
+    if (!departmentValue) {
+        // 如果未选择科室，显示提示信息
+        const defaultOption = document.createElement('option');
+        defaultOption.value = "";
+        defaultOption.textContent = "请先选择科室";
+        procedureSelect.appendChild(defaultOption);
+        return;
+    }
+    
+    // 添加默认选项
+    const defaultOption = document.createElement('option');
+    defaultOption.value = "";
+    defaultOption.textContent = "请选择术式";
+    procedureSelect.appendChild(defaultOption);
+    
+    if (window.proceduresData) {
+        // 如果是"其他"选项
+        if (departmentValue === "other") {
+            const otherOption = document.createElement('option');
+            otherOption.value = "other";
+            otherOption.textContent = "其他术式";
+            procedureSelect.appendChild(otherOption);
+            return;
+        }
+        
+        // 找到对应科室的术式列表
+        const selectedDept = window.proceduresData.departments.find(dept => dept.value === departmentValue);
+        
+        if (selectedDept && selectedDept.procedures && selectedDept.procedures.length > 0) {
+            // 添加术式选项
+            selectedDept.procedures.forEach(proc => {
+                const option = document.createElement('option');
+                option.value = proc.value;
+                option.textContent = proc.label;
+                procedureSelect.appendChild(option);
+            });
+        } else {
+            console.error('未找到选定科室的术式数据');
+        }
+    }
+}
+
+// 加载手术术式选项 - 此函数将不再使用，由loadDepartmentsAndProcedures替代
+function loadSurgicalProcedures() {
+    // 该函数已被替代，保留为空函数以避免错误
+    console.log('loadSurgicalProcedures已被新的loadDepartmentsAndProcedures函数替代');
 }
 
 // 初始化页面，显示选择的医生信息
@@ -447,7 +558,9 @@ function validateAllFields() {
         }
     });
     
-    const surgerySelect = document.querySelector('.input-wrapper select');
+    // 获取科室和术式选择框
+    const departmentSelect = document.getElementById('department-select');
+    const procedureSelect = document.getElementById('procedure-select');
     
     // 创建字段标签映射
     const fieldLabels = {
@@ -470,9 +583,21 @@ function validateAllFields() {
         }
     }
     
-    // 验证手术类型选择
-    if (surgerySelect && !surgerySelect.value) {
-        showMessage('请选择手术类型', 'error');
+    // 验证科室选择
+    if (departmentSelect && !departmentSelect.value) {
+        showMessage('请选择科室', 'error');
+        const wrapper = departmentSelect.closest('.input-wrapper');
+        if (wrapper) wrapper.classList.add('error');
+        departmentSelect.classList.add('error');
+        return false;
+    }
+    
+    // 验证术式选择
+    if (procedureSelect && !procedureSelect.value) {
+        showMessage('请选择术式', 'error');
+        const wrapper = procedureSelect.closest('.input-wrapper');
+        if (wrapper) wrapper.classList.add('error');
+        procedureSelect.classList.add('error');
         return false;
     }
     
@@ -567,7 +692,19 @@ function collectFormData() {
     
     // 获取所有输入框的值
     const inputs = document.querySelectorAll('.input-wrapper input');
-    const select = document.querySelector('.input-wrapper select');
+    
+    // 获取科室和术式值
+    const departmentSelect = document.getElementById('department-select');
+    const procedureSelect = document.getElementById('procedure-select');
+    
+    // 获取科室和术式的文本标签
+    const departmentText = departmentSelect && departmentSelect.options[departmentSelect.selectedIndex] 
+        ? departmentSelect.options[departmentSelect.selectedIndex].text 
+        : '未选择';
+        
+    const procedureText = procedureSelect && procedureSelect.options[procedureSelect.selectedIndex] 
+        ? procedureSelect.options[procedureSelect.selectedIndex].text 
+        : '未选择';
     
     const data = {
         video: {
@@ -578,7 +715,10 @@ function collectFormData() {
         patient: {
             doctor: inputs[0] ? inputs[0].value || '未填写' : '未填写',
             hospital: inputs[1] ? inputs[1].value || '未填写' : '未填写', 
-            surgery: select ? select.value || '未选择' : '未选择',
+            department: departmentText,
+            surgery: procedureText,
+            departmentValue: departmentSelect ? departmentSelect.value : '',
+            surgeryValue: procedureSelect ? procedureSelect.value : '',
             bleeding: inputs[2] ? inputs[2].value || '未填写' : '未填写',
             bmi: inputs[3] ? inputs[3].value || '未填写' : '未填写',
             age: inputs[4] ? inputs[4].value || '未填写' : '未填写',

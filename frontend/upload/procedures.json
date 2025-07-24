@@ -1,11 +1,23 @@
 {
-  "procedures": [
-    {"value": "结直肠癌根治术", "label": "结直肠癌根治术"},
-    {"value": "结肠造口术", "label": "结肠造口术"},
-    {"value": "直肠低位前切除术", "label": "直肠低位前切除术"},
-    {"value": "左肺叶切除术", "label": "左肺叶切除术"},
-    {"value": "肺楔形切除术", "label": "肺楔形切除术"},
-    {"value": "解剖性肺段切除术", "label": "解剖性肺段切除术"},
-    {"value": "其他", "label": "其他"}
-  ]
+  "departments": [
+    {
+      "value": "general_surgery",
+      "label": "普外科",
+      "procedures": [
+        {"value": "结直肠癌根治术", "label": "结直肠癌根治术"},
+        {"value": "结肠造口术", "label": "结肠造口术"},
+        {"value": "直肠低位前切除术", "label": "直肠低位前切除术"}
+      ]
+    },
+    {
+      "value": "thoracic_surgery",
+      "label": "胸外科",
+      "procedures": [
+        {"value": "左肺叶切除术", "label": "左肺叶切除术"},
+        {"value": "右肺叶切除术", "label": "右肺叶切除术"},
+        {"value": "肺楔形切除术", "label": "肺楔形切除术"}
+      ]
+    }
+  ],
+  "other": {"value": "other", "label": "其他"}
 } 
