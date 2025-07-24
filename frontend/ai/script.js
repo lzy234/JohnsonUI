@@ -1142,9 +1142,7 @@ async function loadPresetVideo(videoId, videoElement, timeDisplay) {
         
         // 预设的视频列表
         const fallbackVideos = {
-            'video_001': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-            'video_002': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-            'video_003': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
+            'video_001': 'http://120.55.79.77:5000/stream/demo.mp4'
         };
         
         // 直接使用预设视频，不再尝试从API获取视频URL
