@@ -79,4 +79,4 @@ def stream_video(filename):
     return send_from_directory(VIDEO_FOLDER, filename)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True) 
+    app.run(host='120.55.79.77', port=5000, debug=True) 
