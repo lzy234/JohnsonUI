@@ -45,6 +45,7 @@ class StreamEventType(str, Enum):
     MESSAGE = "message"
     COMPLETE = "complete"
     ERROR = "error"
+    FOLLOW_UP = "follow_up"
 
 
 class StreamEvent(BaseModel):
@@ -54,6 +55,7 @@ class StreamEvent(BaseModel):
     done: bool = Field(default=False, description="是否完成")
     usage: Optional[Dict[str, Any]] = Field(default=None, description="使用统计")
     error: Optional[str] = Field(default=None, description="错误信息")
+    follow_up_questions: Optional[List[str]] = Field(default=None, description="建议问题列表")
 
 
 class HealthResponse(BaseModel):
@@ -68,4 +70,4 @@ class ErrorResponse(BaseModel):
     error: str = Field(..., description="错误类型")
     message: str = Field(..., description="错误消息")
     detail: Optional[str] = Field(default=None, description="详细信息")
-    code: Optional[int] = Field(default=None, description="错误代码") 
+    code: Optional[int] = Field(default=None, description="错误代码")
