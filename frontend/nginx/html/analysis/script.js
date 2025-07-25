@@ -1,13 +1,30 @@
 // 页面加载完成后执行
 document.addEventListener('DOMContentLoaded', function() {
+    // 初始化路由器
+    if (!window.router && typeof AppRouter !== 'undefined') {
+        window.router = new AppRouter();
+        console.log('Router initialized');
+    }
+    
     initializePage();
+});
+
+// 在window完全加载后再次尝试更新医生头像
+window.addEventListener('load', function() {
+    console.log('页面完全加载，再次尝试更新医生头像');
+    // 延迟300毫秒，确保所有资源都已加载完成
+    setTimeout(updateDoctorAvatar, 300);
 });
 
 // 初始化页面
 function initializePage() {
+    console.log('初始化分析页面');
+    
     // 验证数据并显示分析信息
     if (window.router) {
         const validation = window.router.validateFlow('analysis');
+        console.log('路由验证结果:', validation);
+        
         if (!validation.valid) {
             window.router.showMessage(validation.reason, 'error');
             if (validation.redirectTo) {
@@ -18,8 +35,38 @@ function initializePage() {
             return;
         }
         
+        // 尝试从URL参数获取医生信息
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            const doctorParam = urlParams.get('doctor');
+            
+            if (doctorParam) {
+                console.log('从URL参数中获取到医生数据:', doctorParam);
+                try {
+                    // 尝试解析JSON
+                    const doctorData = JSON.parse(decodeURIComponent(doctorParam));
+                    console.log('解析后的医生数据:', doctorData);
+                    
+                    // 如果router中没有医生数据，则使用URL参数中的数据
+                    if (!window.router.getPageData('doctor')) {
+                        console.log('保存从URL获取的医生数据到router');
+                        window.router.savePageData('doctor', doctorData);
+                    }
+                } catch (e) {
+                    console.error('解析URL医生参数失败:', e);
+                }
+            }
+        } catch (e) {
+            console.error('处理URL参数时出错:', e);
+        }
+        
         // 显示分析的视频信息
         displayAnalysisInfo();
+        
+        // 更新医生头像
+        updateDoctorAvatar();
+    } else {
+        console.error('Router未初始化');
     }
     
     // 启动进度条动画
@@ -30,6 +77,61 @@ function initializePage() {
     
     // 模拟分析进度更新
     simulateAnalysisProgress();
+}
+
+// 更新医生头像
+function updateDoctorAvatar() {
+    console.log('开始更新医生头像');
+    const doctorData = window.router.getPageData('doctor');
+    console.log('获取到的医生数据:', doctorData);
+    
+    if (!doctorData) {
+        console.warn('未找到医生数据，无法更新头像');
+        return;
+    }
+    
+    // 尝试通过类选择器和ID选择器查找元素
+    let doctorAvatar = document.querySelector('.doctor-avatar');
+    if (!doctorAvatar) {
+        doctorAvatar = document.getElementById('doctorAvatar');
+    }
+    
+    console.log('找到的医生头像元素:', doctorAvatar);
+    
+    if (doctorAvatar) {
+        let imagePath;
+        
+        if (doctorData.id === 'wang' || (doctorData.name && doctorData.name.includes('王'))) {
+            console.log('选择了王医生，更新头像为doctor1.png');
+            imagePath = './images/doctor1.png';
+        } else if (doctorData.id === 'chen' || (doctorData.name && doctorData.name.includes('陈'))) {
+            console.log('选择了陈医生，更新头像为doctor3.png');
+            imagePath = './images/doctor3.png';
+        } else {
+            console.warn('未识别的医生ID:', doctorData.id);
+            return;
+        }
+        
+        // 设置新的图片路径
+        doctorAvatar.src = imagePath;
+        
+        // 验证图片是否加载成功
+        doctorAvatar.onload = () => {
+            console.log('医生头像加载成功:', imagePath);
+        };
+        
+        doctorAvatar.onerror = () => {
+            console.error('医生头像加载失败:', imagePath);
+            // 尝试使用绝对路径
+            if (imagePath.startsWith('./')) {
+                const absolutePath = imagePath.replace('./', '/analysis/');
+                console.log('尝试使用绝对路径:', absolutePath);
+                doctorAvatar.src = absolutePath;
+            }
+        };
+    } else {
+        console.error('未找到医生头像元素，无法更新头像');
+    }
 }
 
 // 显示正在分析的信息

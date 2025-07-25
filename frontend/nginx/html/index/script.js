@@ -1,20 +1,26 @@
 // AI手术复盘助手 - 首页交互逻辑
 
 document.addEventListener('DOMContentLoaded', function() {
+    // 初始化路由器
+    if (!window.router && typeof AppRouter !== 'undefined') {
+        window.router = new AppRouter();
+        console.log('Router initialized');
+    }
+    
     // 获取所有AI助手卡片
     const aiCards = document.querySelectorAll('.ai-card');
     
     // 医生信息数据
     const doctorData = {
         wangzhiruo: {
-            id: 'wangzhiruo',  // 添加id字段，确保与后端配置中的key一致
+            id: 'wang',  // 简化ID以便在AI页面匹配
             name: '王专家',
             specialty: '普外科',
             expertise: '术后并发症分析',
             description: '精于普外科手术全流程复盘，擅长发现术中遗漏与术后风险隐患。'
         },
         chenguodong: {
-            id: 'chenguodong',  // 添加id字段，确保与后端配置中的key一致
+            id: 'chen',  // 简化ID以便在AI页面匹配
             name: '陈专家',
             specialty: '内科',
             expertise: '复杂病例复盘',

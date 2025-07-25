@@ -6,13 +6,14 @@
 
 body {
     font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    overflow: hidden;
+    overflow-x: hidden; /* 防止水平滚动 */
+    height: 100vh; /* 使用视口高度 */
+    width: 100vw; /* 使用视口宽度 */
 }
 
 .container {
-    width: 390px;
-    height: 844px;
-    margin: 0 auto;
+    width: 100%; /* 修改为100%宽度 */
+    min-height: 100vh; /* 最小高度为视口高度 */
     position: relative;
     background: url('images/background.png') center/cover no-repeat;
     border-radius: 32px;
@@ -21,7 +22,7 @@ body {
 
 /* 顶部返回按钮 */
 .header {
-    position: absolute;
+    position: fixed;
     top: 60px;
     left: 20px;
     z-index: 10;
@@ -53,14 +54,17 @@ body {
     width: 100%;
     height: 100%;
     padding: 0 20px;
+    overflow-y: auto; /* 允许垂直滚动 */
+    min-height: 100vh; /* 最小高度为视口高度 */
 }
 
 /* 标题区域 */
 .title-section {
-    position: absolute;
+    position: relative;
     top: 219px;
-    left: 40px;
-    width: 300px;
+    margin: 0 auto;
+    max-width: 800px; /* 添加最大宽度 */
+    width: 80%;
 }
 
 .main-title {
@@ -75,7 +79,8 @@ body {
 .video-preview {
     position: absolute;
     top: 488px;
-    left: 135px;
+    left: 50%;
+    transform: translateX(-50%); /* 居中显示 */
     width: 120px;
     height: 120px;
     border-radius: 8px;
@@ -104,6 +109,7 @@ body {
         inset 1.06px 1.06px 4.79px 0px rgba(255, 255, 255, 0.4),
         inset 0.53px 0.53px 0.53px 0px rgba(255, 255, 255, 0.7);
     overflow: hidden;
+    z-index: 1;
 }
 
 .background-decoration::after {
@@ -127,13 +133,15 @@ body {
     z-index: 1;
 }
 
-/* 分析功能卡片 */
+/* 分析功能卡片 - 使用相对定位和百分比 */
 .analysis-cards {
-    position: absolute;
+    position: relative;
     top: 388px;
     left: 0;
     width: 100%;
     height: 240px;
+    max-width: 800px; /* 添加最大宽度 */
+    margin: 0 auto;
 }
 
 .card {
@@ -266,14 +274,16 @@ body {
 
 /* 进度条区域 */
 .progress-section {
-    position: absolute;
-    top: 690px;
-    left: 123px;
-    width: 171px;
+    position: relative;
+    top: 240px;
+    left: 0;
+    width: 80%;
+    max-width: 800px;
     height: 20px;
     display: flex;
     align-items: center;
     gap: 8px;
+    margin: 15px auto 0;
 }
 
 .progress-bar {
@@ -313,12 +323,50 @@ body {
         inset 3px 3px 0.5px -3.5px rgba(255, 255, 255, 0.5);
 }
 
-/* 响应式设计 */
+/* 响应式设计 - 修改以支持各种屏幕尺寸 */
 @media (max-width: 390px) {
     .container {
-        width: 100vw;
-        height: 100vh;
-        border-radius: 0;
+        width: 100%;
+    }
+    
+    .title-section {
+        width: 90%;
+    }
+}
+
+/* 添加更大屏幕的响应式设计 */
+@media (min-width: 768px) {
+    .header {
+        margin: 60px auto 0;
+        left: 50%;
+        transform: translateX(-50%);
+        max-width: 800px;
+    }
+    
+    .back-button {
+        position: absolute;
+        left: 20px;
+    }
+    
+    /* 调整卡片位置，使用百分比定位 */
+    .card:nth-child(1) {
+        left: 10%;
+    }
+    
+    .card:nth-child(2) {
+        left: 25%;
+    }
+    
+    .card:nth-child(3) {
+        left: 60%;
+    }
+    
+    .card:nth-child(4) {
+        left: 15%;
+    }
+    
+    .card:nth-child(5) {
+        left: 55%;
     }
 }
 
