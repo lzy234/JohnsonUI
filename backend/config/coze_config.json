@@ -20,11 +20,11 @@
     "chenguodong": {
       "api_token": "pat_BabxcQ99cMx3ziABhpRshfsvXBP0HXgke1wVigzquPehrOshql7Fr61kXhex1S4b",
       "base_url": "https://api.coze.cn",
-      "bot_id": "7519906707460898851",
+      "bot_id": "7527934400437207076",
       "default_user_id": "chen_user",
       "timeout": 30,
       "max_retries": 3,
-      "description": "陈专家 - 内科复杂病例复盘AI"
+      "description": "陈专家 - 胸外科复杂病例复盘AI"
     }
   },
   "server": {
