@@ -22,9 +22,9 @@ document.addEventListener('DOMContentLoaded', function() {
         chenguodong: {
             id: 'chen',  // 简化ID以便在AI页面匹配
             name: '陈专家',
-            specialty: '内科',
+            specialty: '胸外科',
             expertise: '复杂病例复盘',
-            description: '经验丰富的内科复盘专家AI，帮助识别复杂手术中的关键改进点。'
+            description: '经验丰富的胸外科复盘专家AI，帮助识别复杂手术中的关键改进点。'
         }
     };
 
