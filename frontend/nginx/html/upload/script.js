@@ -398,7 +398,7 @@ function initializePage() {
                  const basicDoctorData = {
                      id: urlParams.doctor_id,
                      name: urlParams.doctor_id === 'wangzhiruo' ? '王专家' : '陈专家',
-                     specialty: urlParams.doctor_id === 'wangzhiruo' ? '普外科' : '内科',
+                     specialty: urlParams.doctor_id === 'wangzhiruo' ? '普外科' : '胸外科',
                      expertise: urlParams.doctor_id === 'wangzhiruo' ? '术后并发症分析' : '复杂病例复盘',
                      restored: true // 标记这是恢复的数据
                  };
