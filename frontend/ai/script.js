@@ -682,7 +682,7 @@ async function sendMessage(message) {
 
 // 流式聊天API调用
 async function streamChatWithAPI(message) {
-    const API_BASE_URL = 'http://120.55.79.77:8000';
+    const API_BASE_URL = 'http://123.57.150.187:8000';
     
     // 从会话数据中获取医生类型
     const doctorData = window.router ? window.router.getPageData('doctor') : null;
@@ -1142,7 +1142,7 @@ async function loadPresetVideo(videoId, videoElement, timeDisplay) {
         
         // 预设的视频列表
         const fallbackVideos = {
-            'video_001': 'http://120.55.79.77:5000/stream/demo.mp4'
+            'video_001': 'http://123.57.150.187:5000/stream/demo.mp4'
         };
         
         // 直接使用预设视频，不再尝试从API获取视频URL
