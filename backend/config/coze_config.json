@@ -1,7 +1,7 @@
 {
   "coze": {
     "default": {
-      "api_token": "pat_BabxcQ99cMx3ziABhpRshfsvXBP0HXgke1wVigzquPehrOshql7Fr61kXhex1S4b",
+      "api_token": "cztei_ls6vZhwX4UpmPsW2qrmcIMr3oTL4vdpc0Vkgihh7sJSwcly0vDqxt8yEYfyg5gtwp",
       "base_url": "https://api.coze.cn",
       "bot_id": "7519906707460898851",
       "default_user_id": "123456789",
@@ -9,7 +9,7 @@
       "max_retries": 3
     },
     "wangzhiruo": {
-      "api_token": "pat_BabxcQ99cMx3ziABhpRshfsvXBP0HXgke1wVigzquPehrOshql7Fr61kXhex1S4b",
+      "api_token": "cztei_ls6vZhwX4UpmPsW2qrmcIMr3oTL4vdpc0Vkgihh7sJSwcly0vDqxt8yEYfyg5gtwp",
       "base_url": "https://api.coze.cn",
       "bot_id": "7529385539578429491", 
       "default_user_id": "wang_user",
@@ -18,7 +18,7 @@
       "description": "王专家 - 普外科手术复盘AI"
     },
     "chenguodong": {
-      "api_token": "pat_BabxcQ99cMx3ziABhpRshfsvXBP0HXgke1wVigzquPehrOshql7Fr61kXhex1S4b",
+      "api_token": "cztei_ls6vZhwX4UpmPsW2qrmcIMr3oTL4vdpc0Vkgihh7sJSwcly0vDqxt8yEYfyg5gtwp",
       "base_url": "https://api.coze.cn",
       "bot_id": "7527934400437207076",
       "default_user_id": "chen_user",
