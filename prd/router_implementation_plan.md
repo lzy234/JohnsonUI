@@ -95,7 +95,7 @@ class AppRouter {
 {
     "jhui_session": {
         "doctor": {
-            "id": "wangzhiruo",
+            "id": "wang",
             "name": "王专家",
             "specialty": "普外科",
             "expertise": "术后并发症分析"
@@ -127,7 +127,7 @@ class AppRouter {
 
 #### 3.2 URL参数设计
 - index页面：`index.html`
-- upload页面：`upload/index.html?from=index&doctor_id=wangzhiruo`
+- upload页面：`upload/index.html?from=index&doctor_id=wang`
 - analysis页面：`analysis/index.html?from=upload&upload_id=xxx`
 - ai页面：`ai/index.html?from=analysis&session_id=xxx`
 

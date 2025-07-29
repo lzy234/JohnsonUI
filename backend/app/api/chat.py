@@ -194,7 +194,7 @@ async def get_bot_info(doctor_type: str = None) -> Dict[str, Any]:
     获取机器人信息
     
     Args:
-        doctor_type: 医生类型，如'wangzhiruo'或'chenguodong'
+        doctor_type: 医生类型，如'wang'或'chen'
     
     Returns:
         机器人信息
@@ -228,21 +228,21 @@ async def get_doctors() -> Dict[str, Any]:
         doctors = []
         
         # 处理王专家配置
-        if hasattr(config.coze, "wangzhiruo") and config.coze.wangzhiruo:
+        if hasattr(config.coze, "wang") and config.coze.wang:
             doctors.append({
-                "id": "wangzhiruo",
+                "id": "wang",
                 "name": "王专家",
                 "specialty": "普外科",
-                "description": config.coze.wangzhiruo.description or "普外科手术复盘AI"
+                "description": config.coze.wang.description or "普外科手术复盘AI"
             })
             
         # 处理陈专家配置
-        if hasattr(config.coze, "chenguodong") and config.coze.chenguodong:
+        if hasattr(config.coze, "chen") and config.coze.chen:
             doctors.append({
-                "id": "chenguodong",
+                "id": "chen",
                 "name": "陈专家",
                 "specialty": "内科",
-                "description": config.coze.chenguodong.description or "内科复杂病例复盘AI"
+                "description": config.coze.chen.description or "内科复杂病例复盘AI"
             })
             
         return {

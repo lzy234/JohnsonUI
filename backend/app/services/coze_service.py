@@ -30,7 +30,7 @@ class CozeService:
         获取Coze客户端实例
         
         Args:
-            doctor_type: 医生类型，如'wangzhiruo'或'chenguodong'
+            doctor_type: 医生类型，如'wang'或'chen'
         
         Returns:
             Coze客户端
@@ -53,7 +53,7 @@ class CozeService:
         获取Coze配置
         
         Args:
-            doctor_type: 医生类型，如'wangzhiruo'或'chenguodong'
+            doctor_type: 医生类型，如'wang'或'chen'
         
         Returns:
             Coze配置对象
@@ -414,7 +414,7 @@ class CozeService:
         获取机器人信息
         
         Args:
-            doctor_type: 医生类型，如'wangzhiruo'或'chenguodong'
+            doctor_type: 医生类型，如'wang'或'chen'
             
         Returns:
             机器人信息

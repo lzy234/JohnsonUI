@@ -20,15 +20,15 @@ class CozeConfig(BaseModel):
 class CozeConfigs(BaseModel):
     """多个Coze配置"""
     default: CozeConfig
-    wangzhiruo: Optional[CozeConfig] = None
-    chenguodong: Optional[CozeConfig] = None
+    wang: Optional[CozeConfig] = None
+    chen: Optional[CozeConfig] = None
     
     def get_config(self, doctor_type: Optional[str] = None) -> CozeConfig:
         """
         根据医生类型获取对应的配置
         
         Args:
-            doctor_type: 医生类型，如wangzhiruo或chenguodong
+            doctor_type: 医生类型，如wang或chen
             
         Returns:
             对应的Coze配置

@@ -12,14 +12,14 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 医生信息数据
     const doctorData = {
-        wangzhiruo: {
+        wang: {
             id: 'wang',  // 简化ID以便在AI页面匹配
             name: '王专家',
             specialty: '普外科',
             expertise: '术后并发症分析',
             description: '精于普外科手术全流程复盘，擅长发现术中遗漏与术后风险隐患。'
         },
-        chenguodong: {
+        chen: {
             id: 'chen',  // 简化ID以便在AI页面匹配
             name: '陈专家',
             specialty: '胸外科',

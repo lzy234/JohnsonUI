@@ -86,7 +86,7 @@ class ConfigService:
         获取Coze配置
         
         Args:
-            doctor_type: 医生类型，如'wangzhiruo'或'chenguodong'
+            doctor_type: 医生类型，如'wang'或'chen'
         
         Returns:
             Coze配置对象
