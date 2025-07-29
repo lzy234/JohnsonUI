@@ -2,8 +2,8 @@
   "preset_videos": [
     {
       "id": "video_001",
-      "name": "左肝切除术_07-06",
-      "description": "肝脏手术示范视频",
+      "name": "左半结肠切除",
+      "description": "手术示范视频",
       "duration": "01:28:49",
       "size": "204 MB",
       "upload_time": "2025-07-06T10:32:00",
@@ -13,8 +13,8 @@
     },
     {
       "id": "video_002",
-      "name": "左肝切除术_07-05",
-      "description": "肝脏手术视频第二版",
+      "name": "右半直肠切除",
+      "description": "手术示范视频",
       "duration": "01:22:37",
       "size": "198 MB",
       "upload_time": "2025-07-05T13:32:00",
@@ -24,13 +24,13 @@
     },
     {
       "id": "video_003",
-      "name": "左肝切除术_07-04",
-      "description": "复杂肝脏手术案例",
+      "name": "胰十二直肠切除术",
+      "description": "手术示范视频",
       "duration": "01:35:12",
       "size": "340 MB",
       "upload_time": "2025-07-04T16:00:00",
       "thumbnail": "https://example.com/thumbnails/liver_surgery_03.jpg",
-      "url": "https://example.com/videos/liver_surgery_03.mp4",
+      "url": "http://123.57.150.187:5000/stream/demo.mp4",
       "local_path": "videos/liver_surgery_03.mp4"
     }
   ]
