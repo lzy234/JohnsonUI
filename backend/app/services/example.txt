@@ -1,0 +1,30 @@
+data: {"type": "init", "message": "连接成功", "done": false, "request_id": "stream_web_user_1753791398121_455681"}
+
+data: {"type": "message", "content": "（", "done": false, "usage": null, "error": null, "follow_up_questions": null, "request_id": "stream_web_user_1753791398121_455681"}
+
+data: {"type": "message", "content": "保持", "done": false, "usage": null, "error": null, "follow_up_questions": null, "request_id": "stream_web_user_1753791398121_455681"}
+
+data: {"type": "message", "content": "静", "done": false, "usage": null, "error": null, "follow_up_questions": null, "request_id": "stream_web_user_1753791398121_455681"}
+
+data: {"type": "message", "content": "默", "done": false, "usage": null, "error": null, "follow_up_questions": null, "request_id": "stream_web_user_1753791398121_455681"}
+
+data: {"type": "message", "content": "状态", "done": false, "usage": null, "error": null, "follow_up_questions": null, "request_id": "stream_web_user_1753791398121_455681"}
+
+data: {"type": "message", "content": "，", "done": false, "usage": null, "error": null, "follow_up_questions": null, "request_id": "stream_web_user_1753791398121_455681"}
+
+data: {"type": "message", "content": "等待", "done": false, "usage": null, "error": null, "follow_up_questions": null, "request_id": "stream_web_user_1753791398121_455681"}
+
+data: {"type": "message", "content": "用户", "done": false, "usage": null, "error": null, "follow_up_questions": null, "request_id": "stream_web_user_1753791398121_455681"}
+
+data: {"type": "message", "content": "进一步", "done": false, "usage": null, "error": null, "follow_up_questions": null, "request_id": "stream_web_user_1753791398121_455681"}
+
+data: {"type": "message", "content": "提问", "done": false, "usage": null, "error": null, "follow_up_questions": null, "request_id": "stream_web_user_1753791398121_455681"}
+
+data: {"type": "message", "content": "）", "done": false, "usage": null, "error": null, "follow_up_questions": null, "request_id": "stream_web_user_1753791398121_455681"}
+
+data: {"type": "message", "content": "\n\n[1] [肝手术知识_腹腔镜肝脏切除手术操作指南.pdf](https://lf9-appstore-sign.oceancloudapi.com/ocean-cloud-tos/FileBizType.BIZ_BOT_DATASET/420483779005658_1750866439807567658_TWUbDttxhF.pdf?lk3s=61a3dea3&x-expires=1756383348&x-signature=1VMU8BEdFXceNntHoeENJqggDRA%3D)\n[2] 专家经验_校对1.docx", "done": false, "usage": null, "error": null, "follow_up_questions": null, "request_id": "stream_web_user_1753791345436_455629"}
+
+data: {"type": "complete", "content": null, "done": true, "usage": {"token_count": 1069, "input_count": 1058, "output_count": 11}, "error": null, "follow_up_questions": ["我的手术方案制定是否科学？", "手术过程中有无可能导致感染的风险点？", "术后的恢复情况是否符合预期？"], "request_id": "stream_web_user_1753791398121_455681"}
+
+: end-of-stream 455685
+

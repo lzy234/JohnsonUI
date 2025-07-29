@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API测试</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .output-container {
+            display: flex;
+            gap: 20px;
+        }
+        .output-box {
+            flex: 1;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 15px;
+            min-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        .main-content {
+            background-color: #f9f9f9;
+        }
+        .references-content {
+            background-color: #f0f8ff;
+        }
+        h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .status {
+            margin-top: 10px;
+            font-style: italic;
+            color: #666;
+        }
+        #doctorSelect {
+            padding: 8px;
+            margin-right: 10px;
+        }
+        #question {
+            flex: 1;
+            padding: 8px;
+            margin-right: 10px;
+        }
+        .input-group {
+            display: flex;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h2>AI 医生对话系统 API 测试</h2>
+    
+    <div class="container">
+        <div class="input-group">
+            <select id="doctorSelect">
+                <option value="wang">王医生 (普外科)</option>
+                <option value="chen">陈医生 (内科)</option>
+            </select>
+            <input type="text" id="question" placeholder="请输入您的问题..." value="肝切除术后有哪些并发症？">
+            <button onclick="testStream()">开始对话</button>
+            <button onclick="getReferences()">获取引用</button>
+        </div>
+        
+        <div class="output-container">
+            <div class="output-box main-content">
+                <h3>主体内容</h3>
+                <div id="mainOutput"></div>
+                <div id="status" class="status"></div>
+            </div>
+            
+            <div class="output-box references-content">
+                <h3>引用文献</h3>
+                <div id="referencesOutput"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let conversationId = "test_conversation_" + Date.now();
+        const mainOutput = document.getElementById('mainOutput');
+        const referencesOutput = document.getElementById('referencesOutput');
+        const status = document.getElementById('status');
+        let eventSource = null;
+        
+        function testStream() {
+            // 重置输出
+            mainOutput.innerHTML = "";
+            referencesOutput.innerHTML = "";
+            status.textContent = "连接中...";
+            
+            // 关闭之前的连接
+            if (eventSource) {
+                eventSource.close();
+                eventSource = null;
+            }
+            
+            // 获取输入值
+            const doctorType = document.getElementById('doctorSelect').value;
+            const message = document.getElementById('question').value;
+            
+            // 更新会话ID
+            conversationId = "test_conversation_" + Date.now();
+            
+            // 构建请求URL和数据
+            const url = 'http://localhost:8000/api/chat/stream-without-references';
+            const requestData = {
+                user_id: "test_user_001",
+                doctor_type: doctorType,
+                message: message,
+                conversation_id: conversationId
+            };
+            
+            // 使用fetch API处理流式响应
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            }).then(response => {
+                if (!response.ok) {
+                    throw new Error(`服务器返回错误: ${response.status} ${response.statusText}`);
+                }
+                
+                status.textContent = "已连接，接收数据中...";
+                
+                // 获取响应的reader
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+                
+                // 处理数据流
+                function processStream() {
+                    reader.read().then(({ done, value }) => {
+                        if (done) {
+                            status.textContent = "连接已关闭";
+                            return;
+                        }
+                        
+                        // 解码二进制数据为文本
+                        const chunk = decoder.decode(value, { stream: true });
+                        buffer += chunk;
+                        
+                        // 处理接收到的文本块，按SSE格式分割
+                        const lines = buffer.split("\n\n");
+                        buffer = lines.pop() || ""; // 最后一行可能不完整，保留到下一次处理
+                        
+                        // 处理每一条SSE消息
+                        lines.forEach(line => {
+                            if (line.startsWith("data:")) {
+                                try {
+                                    const eventData = JSON.parse(line.substring(5).trim());
+                                    
+                                    // 处理不同类型的事件
+                                    if (eventData.type === "message") {
+                                        // 显示消息内容
+                                        mainOutput.innerHTML += eventData.content;
+                                        
+                                        // 自动滚动到底部
+                                        mainOutput.scrollTop = mainOutput.scrollHeight;
+                                    } 
+                                    else if (eventData.type === "init") {
+                                        status.textContent = "已连接，等待回复...";
+                                    } 
+                                    else if (eventData.type === "complete") {
+                                        status.textContent = "回复完成";
+                                        
+                                        // 如果有建议问题，显示
+                                        if (eventData.follow_up_questions && eventData.follow_up_questions.length > 0) {
+                                            let followUpHtml = "<div style='margin-top:10px; padding-top:10px; border-top:1px dashed #ccc;'>";
+                                            followUpHtml += "<strong>建议问题:</strong><ul>";
+                                            
+                                            eventData.follow_up_questions.forEach(q => {
+                                                followUpHtml += `<li><a href="#" onclick="setQuestion('${q}');return false;">${q}</a></li>`;
+                                            });
+                                            
+                                            followUpHtml += "</ul></div>";
+                                            mainOutput.innerHTML += followUpHtml;
+                                        }
+                                    } 
+                                    else if (eventData.type === "error") {
+                                        status.textContent = "错误: " + eventData.error;
+                                        mainOutput.innerHTML += `<div style="color:red">错误: ${eventData.error}</div>`;
+                                    }
+                                } catch (e) {
+                                    console.error("解析消息错误:", e, line);
+                                }
+                            } else if (line.startsWith(":")) {
+                                // 处理心跳或注释行
+                                console.log("心跳/注释:", line);
+                            }
+                        });
+                        
+                        // 继续读取下一块数据
+                        processStream();
+                    }).catch(error => {
+                        status.textContent = "读取流错误: " + error.message;
+                        console.error("读取流错误:", error);
+                    });
+                }
+                
+                // 开始处理流
+                processStream();
+            }).catch(error => {
+                status.textContent = "请求失败: " + error.message;
+                console.error("Fetch 错误:", error);
+            });
+        }
+        
+        function getReferences() {
+            referencesOutput.innerHTML = "获取引用中...";
+            
+            fetch(`http://localhost:8000/api/chat/references/${conversationId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.references) {
+                        // 格式化引用文本，使链接可点击
+                        let formattedRefs = data.references;
+                        
+                        // 替换Markdown链接为HTML链接
+                        formattedRefs = formattedRefs.replace(/\[([^\]]+)\]\(([^)]+)\)/g, 
+                            '<a href="$2" target="_blank">$1</a>');
+                        
+                        referencesOutput.innerHTML = formattedRefs;
+                    } else {
+                        referencesOutput.innerHTML = "没有找到引用或引用为空";
+                        if (data.error) {
+                            referencesOutput.innerHTML += "<br>错误: " + data.error;
+                        }
+                    }
+                })
+                .catch(error => {
+                    referencesOutput.innerHTML = "获取引用错误: " + error.message;
+                });
+        }
+        
+        function setQuestion(question) {
+            document.getElementById('question').value = question;
+        }
+    </script>
+</body>
+</html>

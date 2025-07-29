@@ -4,7 +4,8 @@ Coze API服务封装
 
 import asyncio
 import json
-from typing import AsyncGenerator, Optional, Dict, Any
+import re
+from typing import AsyncGenerator, Optional, Dict, Any, Tuple, List
 from uuid import uuid4
 
 from cozepy import Coze, TokenAuth, Message, MessageContentType, COZE_CN_BASE_URL, ChatEventType
@@ -24,6 +25,7 @@ class CozeService:
         """初始化Coze服务"""
         self._coze_clients = {}
         self._configs = {}
+        self._references_cache = {}  # 用于缓存引用文本
         
     def _get_client(self, doctor_type: Optional[str] = None) -> Coze:
         """
@@ -61,7 +63,37 @@ class CozeService:
         if doctor_type not in self._configs:
             self._configs[doctor_type] = config_service.get_coze_config(doctor_type)
         return self._configs[doctor_type]
-    
+        
+    def _extract_references(self, text: str) -> Tuple[str, str]:
+        """
+        从文本中提取引用部分
+        
+        Args:
+            text: 原始文本
+            
+        Returns:
+            Tuple[str, str]: (主体内容, 引用文本)
+        """
+        # 匹配形如 [1] [标题](URL) 的引用模式
+        reference_pattern = r'\n\n(\[\d+\].*?)($|\n\n)'
+        
+        # 查找所有引用
+        matches = list(re.finditer(reference_pattern, text, re.DOTALL))
+        
+        if not matches:
+            # 没有找到引用，返回原文本和空引用
+            return text, ""
+            
+        # 找到第一个引用的起始位置
+        first_match = matches[0]
+        start_pos = first_match.start()
+        
+        # 分割主体内容和引用部分
+        main_content = text[:start_pos].strip()
+        references = text[start_pos:].strip()
+        
+        return main_content, references
+        
     async def chat_stream(self, request: ChatRequest) -> AsyncGenerator[StreamEvent, None]:
         """
         流式聊天
@@ -320,6 +352,98 @@ class CozeService:
                 done=True
             )
     
+    async def chat_stream_without_references(self, request: ChatRequest) -> AsyncGenerator[StreamEvent, None]:
+        """
+        流式聊天，但不包含引用文献部分
+        
+        Args:
+            request: 聊天请求
+            
+        Yields:
+            StreamEvent: 流式事件
+        """
+        from ..utils.logger import get_request_id
+        request_id = get_request_id()
+        logger.info(f"[{request_id}] 开始无引用流式聊天")
+        
+        # 使用状态标志跟踪是否进入了引用部分
+        in_reference_section = False
+        references_content = ""
+        conversation_id = request.conversation_id or str(uuid4())
+        
+        # 获取原始的流式回复
+        async for event in self.chat_stream(request):
+            if event.type == StreamEventType.MESSAGE:
+                content = event.content
+                
+                # 检查是否遇到引用的开始标记
+                if not in_reference_section and re.search(r'\n\n\[\d+\]', content):
+                    # 找到引用的开始位置
+                    ref_start = content.find('\n\n[')
+                    if ref_start >= 0:
+                        # 分割当前块为引用前和引用部分
+                        before_ref = content[:ref_start]
+                        ref_part = content[ref_start:]
+                        
+                        # 将引用部分添加到引用累积器
+                        references_content += ref_part
+                        in_reference_section = True
+                        
+                        # 只发送引用前的部分
+                        if before_ref:
+                            yield StreamEvent(
+                                type=StreamEventType.MESSAGE,
+                                content=before_ref,
+                                done=False
+                            )
+                        continue  # 跳过原始事件的发送
+                elif in_reference_section:
+                    # 已经在引用部分，继续累积引用内容
+                    references_content += content
+                    continue  # 不发送给前端
+                else:
+                    # 正常的内容，直接发送
+                    yield event
+                    
+            elif event.type == StreamEventType.COMPLETE:
+                # 存储累积的引用内容
+                if references_content:
+                    self._references_cache[conversation_id] = references_content.strip()
+                    logger.info(f"[{request_id}] 缓存引用文本，长度:{len(references_content)}")
+                
+                # 发送完成事件
+                yield event
+            else:
+                # 其他事件类型直接传递
+                yield event
+    
+    async def get_references(self, conversation_id: str) -> Dict[str, Any]:
+        """
+        获取特定对话的引用文献
+        
+        Args:
+            conversation_id: 对话ID
+            
+        Returns:
+            引用文献内容
+        """
+        try:
+            references = self._references_cache.get(conversation_id, "")
+            
+            return {
+                "conversation_id": conversation_id,
+                "references": references,
+                "success": True
+            }
+        except Exception as e:
+            logger.error(f"获取引用文献错误: {e}")
+            return {
+                "conversation_id": conversation_id,
+                "references": "",
+                "success": False,
+                "error": str(e)
+            }
+    
     async def chat_single(self, request: ChatRequest) -> ChatResponse:
         """
         单次聊天（非流式）
@@ -408,6 +532,32 @@ class CozeService:
                 content="",
                 error=str(e)
             )
+    
+    async def chat_single_without_references(self, request: ChatRequest) -> ChatResponse:
+        """
+        单次聊天（非流式）- 不包含引用
+        
+        Args:
+            request: 聊天请求
+            
+        Returns:
+            ChatResponse: 聊天响应，不包含引用部分
+        """
+        response = await self.chat_single(request)
+        
+        if response.content and not response.error:
+            # 分割内容和引用
+            main_content, references = self._extract_references(response.content)
+            
+            # 缓存引用文本
+            conversation_id = response.conversation_id
+            if conversation_id:
+                self._references_cache[conversation_id] = references
+            
+            # 更新响应内容，只包含主体部分
+            response.content = main_content
+            
+        return response
     
     async def get_bot_info(self, doctor_type: Optional[str] = None) -> Dict[str, Any]:
         """
