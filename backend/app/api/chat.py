@@ -190,6 +190,20 @@ async def stream_chat_without_references(request: ChatRequest, req: Request = No
     
     logger.info(f"[{request_id}] 收到无引用流式聊天请求 - 用户: {request.user_id}, 医生类型: {request.doctor_type}, 消息长度: {len(request.message)}")
     
+    # 处理表单数据，如果存在则拼接到消息前面
+    original_message = request.message
+    if request.form_data:
+        try:
+            # 将表单数据转换为格式化的JSON字符串
+            form_str = json.dumps(request.form_data, ensure_ascii=False, indent=2)
+            # 拼接到消息前面
+            request.message = f"表单数据:\n{form_str}\n\n用户问题:\n{request.message}"
+            logger.info(f"[{request_id}] 拼接表单数据到消息，原始长度: {len(original_message)}，新长度: {len(request.message)}")
+        except Exception as e:
+            logger.error(f"[{request_id}] 处理表单数据失败: {e}", exc_info=True)
+            # 如果处理失败，恢复原始消息
+            request.message = original_message
+    
     # 记录请求来源信息
     if req:
         client_host = req.client.host if req.client else "unknown"
@@ -351,6 +365,20 @@ async def single_chat_without_references(request: ChatRequest):
         ChatResponse: 聊天响应，不包含引用文献部分
     """
     logger.info(f"收到无引用单次聊天请求 - 用户: {request.user_id}, 医生类型: {request.doctor_type}, 消息长度: {len(request.message)}")
+    
+    # 处理表单数据，如果存在则拼接到消息前面
+    original_message = request.message
+    if request.form_data:
+        try:
+            # 将表单数据转换为格式化的JSON字符串
+            form_str = json.dumps(request.form_data, ensure_ascii=False, indent=2)
+            # 拼接到消息前面
+            request.message = f"表单数据:\n{form_str}\n\n用户问题:\n{request.message}"
+            logger.info(f"拼接表单数据到消息，原始长度: {len(original_message)}，新长度: {len(request.message)}")
+        except Exception as e:
+            logger.error(f"处理表单数据失败: {e}", exc_info=True)
+            # 如果处理失败，恢复原始消息
+            request.message = original_message
     
     try:
         # 强制设置为非流式

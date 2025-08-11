@@ -29,6 +29,7 @@ class ChatRequest(BaseModel):
     context: Optional[List[ChatMessage]] = Field(default=None, description="对话上下文")
     stream: bool = Field(default=True, description="是否流式响应")
     doctor_type: Optional[str] = Field(default=None, description="医生类型，如'wang'或'chen'")
+    form_data: Optional[Dict[str, Any]] = Field(default=None, description="表单数据，将会被转换为字符串并拼接到消息前面")
 
 
 class ChatResponse(BaseModel):
