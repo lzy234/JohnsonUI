@@ -71,12 +71,56 @@
             display: flex;
             margin-bottom: 15px;
         }
+        #formData {
+            width: 100%;
+            min-height: 100px;
+            padding: 10px;
+            font-family: monospace;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .form-container {
+            margin-bottom: 15px;
+        }
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .json-error {
+            color: red;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
     </style>
 </head>
 <body>
     <h2>AI 医生对话系统 API 测试</h2>
     
     <div class="container">
+        <div class="form-container">
+            <div class="form-header">
+                <h3>JSON表单数据（可选）</h3>
+                <button onclick="validateJSON()">验证JSON</button>
+            </div>
+            <textarea id="formData" placeholder="在此输入JSON格式的表单数据...">{
+  "患者信息": {
+    "姓名": "张三",
+    "年龄": 45,
+    "性别": "男"
+  },
+  "手术信息": {
+    "手术名称": "肝切除术",
+    "手术日期": "2023-10-15",
+    "手术医生": "李四"
+  }
+}</textarea>
+            <div id="jsonError" class="json-error"></div>
+        </div>
+        
         <div class="input-group">
             <select id="doctorSelect">
                 <option value="wang">王医生 (普外科)</option>
@@ -106,9 +150,53 @@
         const mainOutput = document.getElementById('mainOutput');
         const referencesOutput = document.getElementById('referencesOutput');
         const status = document.getElementById('status');
+        const formDataElement = document.getElementById('formData');
+        const jsonErrorElement = document.getElementById('jsonError');
         let eventSource = null;
         
+        function validateJSON() {
+            const jsonText = formDataElement.value.trim();
+            if (!jsonText) {
+                jsonErrorElement.style.display = 'none';
+                return true;
+            }
+            
+            try {
+                JSON.parse(jsonText);
+                jsonErrorElement.style.display = 'none';
+                jsonErrorElement.textContent = '';
+                alert('JSON格式有效！');
+                return true;
+            } catch (e) {
+                jsonErrorElement.style.display = 'block';
+                jsonErrorElement.textContent = '无效的JSON格式: ' + e.message;
+                return false;
+            }
+        }
+        
+        function getFormData() {
+            const jsonText = formDataElement.value.trim();
+            if (!jsonText) {
+                return null;
+            }
+            
+            try {
+                return JSON.parse(jsonText);
+            } catch (e) {
+                jsonErrorElement.style.display = 'block';
+                jsonErrorElement.textContent = '无效的JSON格式: ' + e.message;
+                return null;
+            }
+        }
+        
         function testStream() {
+            // 验证JSON表单
+            const formData = getFormData();
+            if (formDataElement.value.trim() && formData === null) {
+                alert('请修正JSON格式错误后再提交');
+                return;
+            }
+            
             // 重置输出
             mainOutput.innerHTML = "";
             referencesOutput.innerHTML = "";
@@ -135,6 +223,11 @@
                 message: message,
                 conversation_id: conversationId
             };
+            
+            // 添加表单数据（如果有）
+            if (formData) {
+                requestData.form_data = formData;
+            }
             
             // 使用fetch API处理流式响应
             fetch(url, {
